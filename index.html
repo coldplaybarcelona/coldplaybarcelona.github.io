@@ -1,56 +1,43 @@
-
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="en">
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Coldplay School Research</title>
+      <title>Coldplay School Research Project</title>
       <script src="https://cdn.tailwindcss.com"></script>
-      <!-- Font Awesome CSS -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <link rel="icon" type="image/x-icon" href="logo.ico">
    </head>
-   <body class="bg-white shadow-lg">
-      <!-- Navbar -->
+   <body class="bg-gray-100">
       <nav class="bg-white shadow-lg">
          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                <div class="flex">
                   <div class="shrink-0 flex items-center">
-                     <!-- Logo -->
                      <img src="logo.png" alt="Logo" class="h-8 w-8 mr-2">
-                     <a href="#" class="text-xl font-bold">Coldplay Research</a>
+                     <a href="#" class="text-xl font-bold text-gray-800">Coldplay Research</a>
                   </div>
                   <div class="hidden md:flex md:items-center md:space-x-8 ml-8">
-                     <a href="./index.html" class="text-gray-700 hover:text-gray-900"><i class="fas fa-home mr-2"></i>Main page</a>
-                     <div class="relative">
-                        <button id="codingDropdownButton" class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-code mr-2"></i>Videos</button>
-                        <div id="codingDropdown" class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden">
-                           <a href="./terminal" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering 2</a>
+                     <a href="./index.html" class="text-gray-700 hover:text-gray-900"><i class="fas fa-home mr-2"></i>Home</a>
+                     <div class="relative group">
+                        <button class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-code mr-2"></i>Videos</button>
+                        <div class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
+                           <a href="./terminal" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering</a>
                            <a href="./editor" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-laptop-code mr-2"></i>Coding</a>
                            <a href="./python" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-python mr-2"></i>Robotics</a>
                            <a href="./pygame" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-reddit-square mr-2"></i>Digitalization</a>
-                           <a href="./videotest" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fa-brands fa-r-project mr-2"></i>Video test 1</a>
-                           <a href="./videotest2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-r mr-2"></i>Video test 2</a>
-                           
-                         
                         </div>
                      </div>
-                     <div class="relative">
-                        <button id="scienceDropdownButton" class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-flask mr-2"></i>Projects</button>
-                        <div id="scienceDropdown" class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden">
-                           <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fa-solid fa-list-check fa-diagram-project mr-2"></i>SVG editor</a>
-                           <a href="./audio" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio visualizer</a>
+                     <div class="relative group">
+                        <button class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-flask mr-2"></i>Projects</button>
+                        <div class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
+                           <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-diagram-project mr-2"></i>SVG Editor</a>
+                           <a href="./audio" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio Visualizer</a>
                            <a href="./audio2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-mercury mr-2"></i>Robotics</a>
                            <a href="./music" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-lightbulb mr-2"></i>Engineering</a>
-                          
-                          
-
-            <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon"></i> Coordinates</a>
-            <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes"></i> Draw shapes</a>
-            <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square"></i> Generate shapes</a>
-
-
+                           <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon mr-2"></i>Coordinates</a>
+                           <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes mr-2"></i>Draw Shapes</a>
+                           <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square mr-2"></i>Generate Shapes</a>
                         </div>
                      </div>
                   </div>
@@ -64,90 +51,84 @@
                </div>
             </div>
          </div>
-         <!-- Mobile Menu -->
          <div id="mobile-menu" class="md:hidden hidden">
-            <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-home mr-2"></i>Main page</a>
+            <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-home mr-2"></i>Home</a>
             <div class="relative">
                <button id="mobileCodingDropdownButton" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none"><i class="fas fa-code mr-2"></i>Videos</button>
                <div id="mobileCodingDropdown" class="hidden w-full bg-white border rounded shadow-lg"> 
-                  <a href="./terminal" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering 2</a>
+                  <a href="./terminal" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering</a>
                   <a href="./editor" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-laptop-code mr-2"></i>Coding</a>
                   <a href="./python" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-python mr-2"></i>Robotics</a>
                   <a href="./pygame" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-reddit-square mr-2"></i>Digitalization</a>
-                  
                </div>
             </div>
             <div class="relative">
                <button id="mobileScienceDropdownButton" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none"><i class="fas fa-flask mr-2"></i>Projects</button>
                <div id="mobileScienceDropdown" class="hidden w-full bg-white border rounded shadow-lg">
-                  <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fa-solid fa-list-check fa-diagram-project mr-2"></i>SVG editor</a>
-                  <a href="./audio" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio visualizer</a>
+                  <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-diagram-project mr-2"></i>SVG Editor</a>
+                  <a href="./audio" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio Visualizer</a>
                   <a href="./audio2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-mercury mr-2"></i>Robotics</a>
                   <a href="./music" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-lightbulb mr-2"></i>Engineering</a>
-                  
- <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon"></i> Coordinates</a>
-            <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes"></i> Draw shapes</a>
-            <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square"></i> Generate shapes</a>
+                  <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon mr-2"></i>Coordinates</a>
+                  <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes mr-2"></i>Draw Shapes</a>
+                  <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square mr-2"></i>Generate Shapes</a>
                </div>
             </div>
          </div>
       </nav>
-      <!-- Main Content -->
-      <div class="bg-white max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-         <h1 class="text-3xl font-bold">Welcome</h1>
-         <p class="mt-4">School Research Project on Coldplay</p>
-         <h3 class="text-xl mt-4">
-School Research Project on Coldplay with the following students groups:
-<ul>
-
-<li>Projects Group (Ages 11-13)</li>
-<li>Digitalization Group (Ages 15-16)</li>
-<li>Coding and Robotics Group (Ages 16-17)</li>
-Technology and Engineering 2 Group (Ages 17-18)</li>
-<li>Supervised by: Prof. Francesc Pérez</li></ul>
-<p>In this multidisciplinary research project, students from different age groups and specialties explored various aspects of Coldplay’s music, career, and impact through creative and technological projects.</p> </h3>
-         <h4 class="text-lg font-semibold">Més informació en altres webs meves:</h4>
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-            <ul class="list-none">
-               <li><a href="http://github.com/drfperez" target="_blank" class="text-blue-600 underline"><i class="fa-brands fa-github mr-2"></i>Github del professor</a></li>
-               <li><a href="https://blocs.xtec.cat/tecno" target="_blank" class="text-blue-600 underline"><i class="fas fa-blog mr-2"></i>Bloc Xtec</a></li>
-               <li><a href="https://pompeu.neocities.org" target="_blank" class="text-blue-600 underline"><i class="fas fa-globe mr-2"></i>Bloc de Neocities</a></li>
+      <main class="bg-white max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+         <h1 class="text-3xl font-bold text-gray-900">Coldplay School Research Project</h1>
+         <p class="mt-4 text-gray-600">An interdisciplinary exploration of Coldplay's music, career, and impact.</p>
+         <section class="mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800">Project Overview</h2>
+            <p class="mt-4 text-gray-600">This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
+            <h3 class="text-xl mt-6 font-semibold text-gray-800">Participating Groups:</h3>
+            <ul class="mt-2 list-disc list-inside text-gray-600">
+               <li>Projects Group (Ages 11-13)</li>
+               <li>Digitalization Group (Ages 15-16)</li>
+               <li>Coding and Robotics Group (Ages 16-17)</li>
+               <li>Technology and Engineering 2 Group (Ages 17-18)</li>
             </ul>
-            <ul class="list-none">
-               <li><a href="https://blocs.xtec.cat/arteducation" target="_blank" class="text-blue-600 underline"><i class="fas fa-palette mr-2"></i>Bloc d'Art</a></li>
-               <li><a href="https://blocs.xtec.cat/5cities" target="_blank" class="text-blue-600 underline"><i class="fas fa-tree mr-2"></i>Bloc de Medi Ambient</a></li>
-               <li><a href="https://blocs.xtec.cat/comeonstage/" target="_blank" class="text-blue-600 underline"><i class="fas fa-theater-masks mr-2"></i>Bloc de Teatre</a></li>
-            </ul>
-         </div>
-      </div>
+            <p class="mt-4 text-gray-600">Supervised by: Prof. Francesc Pérez</p>
+         </section>
+         <section class="mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800">Additional Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+               <div>
+                  <h3 class="text-lg font-semibold text-gray-700">Academic Resources</h3>
+                  <ul class="mt-2 space-y-2">
+                     <li><a href="http://github.com/drfperez" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fa-brands fa-github mr-2"></i>Professor's GitHub</a></li>
+                     <li><a href="https://blocs.xtec.cat/tecno" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-blog mr-2"></i>Xtec Blog</a></li>
+                     <li><a href="https://pompeu.neocities.org" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-globe mr-2"></i>Neocities Blog</a></li>
+                  </ul>
+               </div>
+               <div>
+                  <h3 class="text-lg font-semibold text-gray-700">Related Projects</h3>
+                  <ul class="mt-2 space-y-2">
+                     <li><a href="https://blocs.xtec.cat/arteducation" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-palette mr-2"></i>Art Education Blog</a></li>
+                     <li><a href="https://blocs.xtec.cat/5cities" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-tree mr-2"></i>Environmental Studies Blog</a></li>
+                     <li><a href="https://blocs.xtec.cat/comeonstage/" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-theater-masks mr-2"></i>Theater Blog</a></li>
+                  </ul>
+               </div>
+            </div>
+         </section>
+      </main>
       <script>
          const hamburger = document.getElementById('hamburger');
          const mobileMenu = document.getElementById('mobile-menu');
-         const codingDropdownButton = document.getElementById('codingDropdownButton');
-         const codingDropdown = document.getElementById('codingDropdown');
-         const scienceDropdownButton = document.getElementById('scienceDropdownButton');
-         const scienceDropdown = document.getElementById('scienceDropdown');
          const mobileCodingDropdownButton = document.getElementById('mobileCodingDropdownButton');
          const mobileCodingDropdown = document.getElementById('mobileCodingDropdown');
          const mobileScienceDropdownButton = document.getElementById('mobileScienceDropdownButton');
          const mobileScienceDropdown = document.getElementById('mobileScienceDropdown');
-         
+
          hamburger.addEventListener('click', () => {
            mobileMenu.classList.toggle('hidden');
          });
-         
-         codingDropdownButton.addEventListener('click', () => {
-           codingDropdown.classList.toggle('hidden');
-         });
-         
-         scienceDropdownButton.addEventListener('click', () => {
-           scienceDropdown.classList.toggle('hidden');
-         });
-         
+
          mobileCodingDropdownButton.addEventListener('click', () => {
            mobileCodingDropdown.classList.toggle('hidden');
          });
-         
+
          mobileScienceDropdownButton.addEventListener('click', () => {
            mobileScienceDropdown.classList.toggle('hidden');
          });
