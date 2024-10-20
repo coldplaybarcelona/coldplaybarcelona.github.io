@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Shape Generator</title>
+    <!-- Inclou la biblioteca p5.js des d'un CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
+    <style>
+        /* Estil bàsic per al cos del document */
+        body { font-family: Arial, sans-serif; }
+        /* Contenidor del llenç (canvas) per mantenir el llenç dins del flux del document */
+        #canvas-container { position: relative; }
+        /* Estils per al formulari de controls: marges i disposició */
+        #controls { margin-top: 20px; }
+        select, button, input { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Genera formes amb p5.js</h2>
+    <!-- Botó per carregar una imatge -->
+    <input type="file" id="imageUpload" accept="image/*">
+    <!-- Contenidor per al llenç -->
+    <div id="canvas-container"></div>
+    <!-- Controls per canviar el tipus de corba, generar codi, esborrar punts i altres -->
+    <div id="controls">
+        <select id="curveType">
+            <option value="vertex">Vertex</option>
+            <option value="curveVertex">Curve Vertex</option>
+            <option value="bezierVertex">Bezier Vertex</option>
+        </select>
+        <button id="generateCode">Generate Code</button>
+        <button id="clearPoints">Clear Points</button>
+        <button id="undoPoint">Undo Last Point</button>
+        <input type="color" id="pointColor" value="#ff0000">
+        <input type="range" id="pointSize" min="2" max="20" value="8">
+    </div>
+    <!-- Contenidor per mostrar el codi generat -->
+    <pre id="generatedCode"></pre>
+
+    <script>
+    // Variables globals
+    let img;  // Per emmagatzemar la imatge carregada
+    let points = [];  // Per emmagatzemar els punts dibuixats a la pantalla
+    let canvas;  // El llenç p5.js
+    let curveType = 'vertex';  // Tipus de corba seleccionada
+    let pointColor = '#ff0000';  // Color dels punts dibuixats
+    let pointSize = 8;  // Mida dels punts dibuixats
+
+    // Funció p5.js per inicialitzar el llenç
+    function setup() {
+        canvas = createCanvas(600, 400);  // Crea un llenç de 600x400 píxels
+        canvas.parent('canvas-container');  // Fa que el llenç estigui dins del 'canvas-container'
+        canvas.mousePressed(addPoint);  // Afegeix un punt quan es fa clic al llenç
+    }
+
+    // Funció p5.js per dibuixar contínuament al llenç
+    function draw() {
+        background(220);  // Estableix un fons gris clar
+        if (img) {  // Si hi ha una imatge carregada
+            image(img, 0, 0, width, height);  // Dibuixa la imatge carregada al llenç
+        }
+        
+        noFill();  // No omple les formes dibuixades
+        stroke(pointColor);  // Configura el color de les línies dibuixades
+
+        // Dibuixa la forma segons els punts emmagatzemats
+        if (points.length > 1) {
+            beginShape();  // Inicia el dibuix d'una forma
+            for (let point of points) {
+                vertex(point.x, point.y);  // Afegeix cada punt a la forma
+            }
+            endShape(CLOSE);  // Finalitza el dibuix de la forma
+        }
+
+        // Dibuixa cada punt individualment
+        for (let point of points) {
+            fill(pointColor);  // Estableix el color de cada punt
+            ellipse(point.x, point.y, pointSize, pointSize);  // Dibuixa els punts com a cercles
+        }
+    }
+
+    // Funció per afegir un punt a la llista de punts
+    function addPoint() {
+        if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+            let x = mouseX;
+            let y = mouseY;
+            points.push(createVector(x, y));  // Afegeix el punt a la llista de punts
+        }
+    }
+
+    // Carrega una imatge seleccionada per l'usuari
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            loadImage(event.target.result, function(loadedImg) {
+                img = loadedImg;  // Emmagatzema la imatge carregada
+                resizeCanvas(img.width, img.height);  // Redimensiona el llenç per adaptar-se a la imatge
+            });
+        }
+        reader.readAsDataURL(file);  // Llegeix la imatge com a URL
+    });
+
+    // Actualitza el tipus de corba segons la selecció de l'usuari
+    document.getElementById('curveType').addEventListener('change', function(e) {
+        curveType = e.target.value;
+    });
+
+    // Genera el codi p5.js per recrear la forma dibuixada
+    document.getElementById('generateCode').addEventListener('click', function() {
+        let code = 'beginShape();\n';  // Inicia la generació del codi
+        for (let i = 0; i < points.length; i++) {
+            let point = points[i];
+            switch (curveType) {
+                case 'vertex':
+                    code += `vertex(${point.x}, ${point.y});\n`;  // Afegeix una línia de codi per a cada punt (vertex)
+                    break;
+                case 'curveVertex':
+                    code += `curveVertex(${point.x}, ${point.y});\n`;  // Afegeix una línia per a corbes suaus
+                    break;
+                case 'bezierVertex':
+                    if (i === 0) {
+                        code += `vertex(${point.x}, ${point.y});\n`;  // Primer punt com a punt inicial
+                    } else if (i < points.length - 2) {
+                        let control1 = points[i];
+                        let control2 = points[i+1];
+                        let anchor = points[i+2];
+                        code += `bezierVertex(${control1.x}, ${control1.y}, ${control2.x}, ${control2.y}, ${anchor.x}, ${anchor.y});\n`;  // Codi per a corbes de Bézier
+                        i += 2;  // Salta dos punts ja utilitzats com a control points
+                    }
+                    break;
+            }
+        }
+        code += 'endShape(CLOSE);';  // Finalitza la generació del codi
+        document.getElementById('generatedCode').textContent = code;  // Mostra el codi generat
+    });
+
+    // Esborra tots els punts
+    document.getElementById('clearPoints').addEventListener('click', function() {
+        points = [];  // Neteja la llista de punts
+    });
+
+    // Desfà l'últim punt afegit
+    document.getElementById('undoPoint').addEventListener('click', function() {
+        points.pop();  // Elimina l'últim punt
+    });
+
+    // Canvia el color dels punts segons la selecció de l'usuari
+    document.getElementById('pointColor').addEventListener('input', function(e) {
+        pointColor = e.target.value;
+    });
+
+    // Canvia la mida dels punts segons el control de l'usuari
+    document.getElementById('pointSize').addEventListener('input', function(e) {
+        pointSize = parseInt(e.target.value);  // Converteix el valor a número sencer
+    });
+    </script>
+</body>
+</html>
