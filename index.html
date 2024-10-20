@@ -4,141 +4,90 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Coldplay School Research Project</title>
-      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <link rel="icon" type="image/x-icon" href="logo.ico">
    </head>
-   <body class="bg-gray-100">
-      <nav class="bg-white shadow-lg">
-         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-               <div class="flex">
-                  <div class="shrink-0 flex items-center">
-                     <img src="logo.png" alt="Logo" class="h-8 w-8 mr-2">
-                     <a href="#" class="text-xl font-bold text-gray-800">Coldplay Research</a>
-                  </div>
-                  <div class="hidden md:flex md:items-center md:space-x-8 ml-8">
-                     <a href="./index.html" class="text-gray-700 hover:text-gray-900"><i class="fas fa-home mr-2"></i>Home</a>
-                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-code mr-2"></i>Videos</button>
-                        <div class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
-                           <a href="./videotest/" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering</a>
-                           <a href="./videotest2/" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-laptop-code mr-2"></i>Coding</a>
-                           <a href="./python" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-python mr-2"></i>Robotics</a>
-                           <a href="./pygame" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-reddit-square mr-2"></i>Digitalization</a>
-                        </div>
-                     </div>
-                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-gray-900 focus:outline-none"><i class="fas fa-flask mr-2"></i>Projects</button>
-                        <div class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
-                           <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-diagram-project mr-2"></i>SVG Editor</a>
-                           <a href="./audio1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio Visualizer</a>
-                           <a href="./audio2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-mercury mr-2"></i>Robotics</a>
-                           <a href="./music" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-lightbulb mr-2"></i>Engineering</a>
-                           <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon mr-2"></i>Coordinates</a>
-                           <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes mr-2"></i>Draw Shapes</a>
-                           <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square mr-2"></i>Generate Shapes</a>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               <div class="flex items-center md:hidden">
-                  <button id="hamburger" class="text-gray-700 hover:text-gray-900 focus:outline-none">
-                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                     </svg>
-                  </button>
-               </div>
-            </div>
-         </div>
-         <div id="mobile-menu" class="md:hidden hidden">
-            <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-home mr-2"></i>Home</a>
-            <div class="relative">
-               <button id="mobileCodingDropdownButton" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none"><i class="fas fa-code mr-2"></i>Videos</button>
-               <div id="mobileCodingDropdown" class="hidden w-full bg-white border rounded shadow-lg"> 
-                  <a href="./videotest/" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-terminal mr-2"></i>Technology and Engineering</a>
-                  <a href="./videotest2/" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-laptop-code mr-2"></i>Coding</a>
-                  <a href="./python" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-python mr-2"></i>Robotics</a>
-                  <a href="./pygame" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fab fa-reddit-square mr-2"></i>Digitalization</a>
-               </div>
-            </div>
-            <div class="relative">
-               <button id="mobileScienceDropdownButton" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none"><i class="fas fa-flask mr-2"></i>Projects</button>
-               <div id="mobileScienceDropdown" class="hidden w-full bg-white border rounded shadow-lg">
-                  <a href="./svgeditor1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-diagram-project mr-2"></i>SVG Editor</a>
-                  <a href="./audio1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-star mr-2"></i>Audio Visualizer</a>
-                  <a href="./audio2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-mercury mr-2"></i>Robotics</a>
-                  <a href="./music" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-lightbulb mr-2"></i>Engineering</a>
-                  <a href="./coordinates" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-draw-polygon mr-2"></i>Coordinates</a>
-                  <a href="./drawshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-shapes mr-2"></i>Draw Shapes</a>
-                  <a href="./generateshapes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i class="fas fa-vector-square mr-2"></i>Generate Shapes</a>
-               </div>
+   <body class="bg-light">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+         <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+               <img src="logo.png" alt="Logo" class="d-inline-block align-text-top" height="30"> Coldplay Research
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+               <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+               <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                     <a class="nav-link" href="./index.html"><i class="fas fa-home me-2"></i>Home</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="videosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                     <i class="fas fa-code me-2"></i>Videos
+                     </a>
+                     <ul class="dropdown-menu" aria-labelledby="videosDropdown">
+                        <li><a class="dropdown-item" href="./videotest/"><i class="fas fa-terminal me-2"></i>Technology and Engineering</a></li>
+                        <li><a class="dropdown-item" href="./videotest2/"><i class="fas fa-laptop-code me-2"></i>Coding</a></li>
+                        <li><a class="dropdown-item" href="./python"><i class="fab fa-python me-2"></i>Robotics</a></li>
+                        <li><a class="dropdown-item" href="./pygame"><i class="fab fa-reddit-square me-2"></i>Digitalization</a></li>
+                     </ul>
+                  </li>
+                  <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                     <i class="fas fa-flask me-2"></i>Projects
+                     </a>
+                     <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+                        <li><a class="dropdown-item" href="./svgeditor1"><i class="fas fa-diagram-project me-2"></i>SVG Editor</a></li>
+                        <li><a class="dropdown-item" href="./audio1"><i class="fas fa-star me-2"></i>Audio Visualizer</a></li>
+                        <li><a class="dropdown-item" href="./audio2"><i class="fas fa-mercury me-2"></i>Robotics</a></li>
+                        <li><a class="dropdown-item" href="./music"><i class="fas fa-lightbulb me-2"></i>Engineering</a></li>
+                        <li><a class="dropdown-item" href="./coordinates"><i class="fas fa-draw-polygon me-2"></i>Coordinates</a></li>
+                        <li><a class="dropdown-item" href="./drawshapes"><i class="fas fa-shapes me-2"></i>Draw Shapes</a></li>
+                        <li><a class="dropdown-item" href="./generateshapes"><i class="fas fa-vector-square me-2"></i>Generate Shapes</a></li>
+                     </ul>
+                  </li>
+               </ul>
             </div>
          </div>
       </nav>
-      <main class="bg-white max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-         <h1 class="text-3xl font-bold text-gray-900">Coldplay School Research Project</h1>
-         <p class="mt-4 text-gray-600">An interdisciplinary exploration of Coldplay's music, career, and impact.</p>
-         <section class="mt-8">
-            <h2 class="text-2xl font-semibold text-gray-800">Project Overview</h2>
-            <p class="mt-4 text-gray-600">This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
-            <h3 class="text-xl mt-6 font-semibold text-gray-800">Participating Groups:</h3>
-            <ul class="mt-2 list-disc list-inside text-gray-600">
-               <li>Projects Group (Ages 11-13)</li>
-               <li>Digitalization Group (Ages 15-16)</li>
-               <li>Coding and Robotics Group (Ages 16-17)</li>
-               <li>Technology and Engineering 2 Group (Ages 17-18)</li>
+      <main class="container mt-5">
+         <h1 class="display-4">Coldplay School Research Project</h1>
+         <p class="lead">An interdisciplinary exploration of Coldplay's music, career, and impact.</p>
+         <section class="mt-5">
+            <h2 class="h3">Project Overview</h2>
+            <p class="mt-3">This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
+            <h3 class="h5 mt-4">Participating Groups:</h3>
+            <ul class="list-unstyled">
+               <li class="mb-2">- Projects Group (Ages 11-13)</li>
+               <li class="mb-2">- Digitalization Group (Ages 15-16)</li>
+               <li class="mb-2">- Coding and Robotics Group (Ages 16-17)</li>
+               <li>- Technology and Engineering 2 Group (Ages 17-18)</li>
             </ul>
-            <p class="mt-4 text-gray-600">Supervised by: Prof. Francesc Pérez (<a href="https://agora.xtec.cat/ies-pompeu-fabra-martorell/">Pompeu Fabra High School</a>, Martorell, Barcelona, fperez@iespompeufabra.cat).</p>
+            <p class="mt-4">Supervised by: Prof. Francesc Pérez (<a href="https://agora.xtec.cat/ies-pompeu-fabra-martorell/" target="_blank">Pompeu Fabra High School</a>, Martorell, Barcelona, fperez@iespompeufabra.cat).</p>
 
-<p class="mt-4 text-gray-600">In this research project focusing on technology and science, students have proposed a wide variety of innovative ideas to make concerts more sustainable. Their proposals range from smart clothing, augmented and virtual reality, smart bands, brain-computer interfaces, and energy-generating smart caps to 3D designs of various concert gadgets, accompanied by the necessary code to make them function. Additionally, they have developed numerous audio visualizers for Coldplay songs, featuring images and icons related to the band that move in response to the volume and change in shape and color according to the pitch—high or low—of the sound frequencies.</p>
+            <p class="mt-4">In this research project focusing on technology and science, students have proposed a wide variety of innovative ideas to make concerts more sustainable. Their proposals range from smart clothing, augmented and virtual reality, smart bands, brain-computer interfaces, and energy-generating smart caps to 3D designs of various concert gadgets, accompanied by the necessary code to make them function. Additionally, they have developed numerous audio visualizers for Coldplay songs, featuring images and icons related to the band that move in response to the volume and change in shape and color according to the pitch—high or low—of the sound frequencies.</p>
 
-<p class="mt-4 text-gray-600">To support the students' work, the professor has developed tools that streamline their workflow. These tools include an editor where students can draw and generate SVG or p5.js code, which is then utilized in their Coldplay audio visualizers. The combination of these technologies demonstrates the integration of creative and technical skills in developing sustainable and interactive concert experiences.</p>
+            <p class="mt-4">To support the students' work, the professor has developed tools that streamline their workflow. These tools include an editor where students can draw and generate SVG or p5.js code, which is then utilized in their Coldplay audio visualizers. The combination of these technologies demonstrates the integration of creative and technical skills in developing sustainable and interactive concert experiences.</p>
 
-<p class="mt-4 text-gray-600">On this website, you will find short and visually engaging Pecha-Kucha-style videos created by all the students, as well as the tools developed by the professor. Most importantly, the site showcases the resulting projects from the collective work of all the students.</p>
-
+            <p class="mt-4">On this website, you will find short and visually engaging Pecha-Kucha-style videos created by all the students, as well as the tools developed by the professor. Most importantly, the site showcases the resulting projects from the collective work of all the students.</p>
          </section>
-         <section class="mt-8">
-            <h2 class="text-2xl font-semibold text-gray-800">Additional Resources</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-               <div>
-                  <h3 class="text-lg font-semibold text-gray-700">Academic Resources</h3>
-                  <ul class="mt-2 space-y-2">
-                     <li><a href="http://github.com/drfperez" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fa-brands fa-github mr-2"></i>Professor's GitHub</a></li>
-                     <li><a href="https://blocs.xtec.cat/tecno" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-blog mr-2"></i>Xtec Blog</a></li>
-                     <li><a href="https://pompeu.neocities.org" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-globe mr-2"></i>Neocities Blog</a></li>
+         <section class="mt-5">
+            <h2 class="h3">Additional Resources</h2>
+            <div class="row mt-4">
+               <div class="col-md-6">
+                  <h3 class="h5">Academic Resources</h3>
+                  <ul class="list-unstyled">
+                     <li><a href="http://github.com/drfperez" target="_blank" class="text-decoration-none text-primary"><i class="fa-brands fa-github me-2"></i>Professor's GitHub</a></li>
+                     <li><a href="https://blocs.xtec.cat/tecno" target="_blank" class="text-decoration-none text-primary"><i class="fas fa-blog me-2"></i>Xtec Blog</a></li>
+                     <li><a href="https://pompeu.neocities.org" target="_blank" class="text-decoration-none text-primary"><i class="fas fa-globe me-2"></i>Neocities Blog</a></li>
                   </ul>
                </div>
-               <div>
-                  <h3 class="text-lg font-semibold text-gray-700">Related Projects</h3>
-                  <ul class="mt-2 space-y-2">
-                     <li><a href="https://blocs.xtec.cat/arteducation" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-palette mr-2"></i>Art Education Blog</a></li>
-                     <li><a href="https://blocs.xtec.cat/5cities" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-tree mr-2"></i>Environmental Studies Blog</a></li>
-                     <li><a href="https://blocs.xtec.cat/comeonstage/" target="_blank" class="text-blue-600 hover:text-blue-800"><i class="fas fa-theater-masks mr-2"></i>Theater Blog</a></li>
-                  </ul>
-               </div>
+               <!-- Add more columns if necessary -->
             </div>
          </section>
       </main>
-      <script>
-         const hamburger = document.getElementById('hamburger');
-         const mobileMenu = document.getElementById('mobile-menu');
-         const mobileCodingDropdownButton = document.getElementById('mobileCodingDropdownButton');
-         const mobileCodingDropdown = document.getElementById('mobileCodingDropdown');
-         const mobileScienceDropdownButton = document.getElementById('mobileScienceDropdownButton');
-         const mobileScienceDropdown = document.getElementById('mobileScienceDropdown');
 
-         hamburger.addEventListener('click', () => {
-           mobileMenu.classList.toggle('hidden');
-         });
-
-         mobileCodingDropdownButton.addEventListener('click', () => {
-           mobileCodingDropdown.classList.toggle('hidden');
-         });
-
-         mobileScienceDropdownButton.addEventListener('click', () => {
-           mobileScienceDropdown.classList.toggle('hidden');
-         });
-      </script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
    </body>
 </html>
