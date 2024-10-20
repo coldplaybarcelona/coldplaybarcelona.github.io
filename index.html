@@ -1,93 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Coldplay School Research Project</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-      <link rel="icon" type="image/x-icon" href="logo.ico">
-   </head>
-   <body class="bg-light">
-      <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-lg">
-         <div class="container">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coldplay Artistic Research Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+        }
+        
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand, .nav-link {
+            color: #ffffff !important;
+        }
+        
+        .dropdown-menu {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .dropdown-item {
+            color: #ffffff;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .hero-section {
+            background: url('coldplay-background.jpg') no-repeat center center;
+            background-size: cover;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .hero-content {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        
+        .section-title {
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-custom {
+            background-color: #1e3c72;
+            color: #ffffff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            background-color: #2a5298;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
             <a class="navbar-brand" href="#">
-               <img src="logo.png" alt="Logo" class="h-8 w-8">
-               Coldplay Research
+                <img src="logo.png" alt="Logo" class="h-8 w-8">
+                Coldplay Artistic Research
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-               <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-               <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
-                     <a class="nav-link" href="./index.html"><i class="fas fa-home me-2"></i>Home</a>
-                  </li>
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="videosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-code me-2"></i>Videos
-                     </a>
-                     <ul class="dropdown-menu" aria-labelledby="videosDropdown">
-                        <li><a class="dropdown-item" href="./videotest/"><i class="fas fa-terminal me-2"></i>Technology and Engineering</a></li>
-                        <li><a class="dropdown-item" href="./videotest2/"><i class="fas fa-laptop-code me-2"></i>Coding</a></li>
-                        <li><a class="dropdown-item" href="./python"><i class="fab fa-python me-2"></i>Robotics</a></li>
-                        <li><a class="dropdown-item" href="./pygame"><i class="fab fa-reddit-square me-2"></i>Digitalization</a></li>
-                     </ul>
-                  </li>
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-flask me-2"></i>Projects
-                     </a>
-                     <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
-                        <li><a class="dropdown-item" href="./svgeditor1"><i class="fas fa-diagram-project me-2"></i>SVG Editor</a></li>
-                        <li><a class="dropdown-item" href="./audio1"><i class="fas fa-star me-2"></i>Audio Visualizer</a></li>
-                        <li><a class="dropdown-item" href="./audio2"><i class="fas fa-mercury me-2"></i>Robotics</a></li>
-                        <li><a class="dropdown-item" href="./music"><i class="fas fa-lightbulb me-2"></i>Engineering</a></li>
-                        <li><a class="dropdown-item" href="./coordinates"><i class="fas fa-draw-polygon me-2"></i>Coordinates</a></li>
-                        <li><a class="dropdown-item" href="./drawshapes"><i class="fas fa-shapes me-2"></i>Draw Shapes</a></li>
-                        <li><a class="dropdown-item" href="./generateshapes"><i class="fas fa-vector-square me-2"></i>Generate Shapes</a></li>
-                     </ul>
-                  </li>
-               </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./index.html"><i class="fas fa-home me-2"></i>Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="videosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-video me-2"></i>Videos
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="videosDropdown">
+                            <li><a class="dropdown-item" href="./videotest/"><i class="fas fa-terminal me-2"></i>Technology and Engineering</a></li>
+                            <li><a class="dropdown-item" href="./videotest2/"><i class="fas fa-laptop-code me-2"></i>Coding</a></li>
+                            <li><a class="dropdown-item" href="./python"><i class="fab fa-python me-2"></i>Robotics</a></li>
+                            <li><a class="dropdown-item" href="./pygame"><i class="fab fa-reddit-square me-2"></i>Digitalization</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-flask me-2"></i>Projects
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+                            <li><a class="dropdown-item" href="./svgeditor1"><i class="fas fa-diagram-project me-2"></i>SVG Editor</a></li>
+                            <li><a class="dropdown-item" href="./audio1"><i class="fas fa-star me-2"></i>Audio Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./audio2"><i class="fas fa-mercury me-2"></i>Robotics</a></li>
+                            <li><a class="dropdown-item" href="./music"><i class="fas fa-lightbulb me-2"></i>Engineering</a></li>
+                            <li><a class="dropdown-item" href="./coordinates"><i class="fas fa-draw-polygon me-2"></i>Coordinates</a></li>
+                            <li><a class="dropdown-item" href="./drawshapes"><i class="fas fa-shapes me-2"></i>Draw Shapes</a></li>
+                            <li><a class="dropdown-item" href="./generateshapes"><i class="fas fa-vector-square me-2"></i>Generate Shapes</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-         </div>
-      </nav>
-      <main class="container py-4">
-         <h1 class="text-3xl fw-bold text-dark">Coldplay School Research Project</h1>
-         <p class="mt-3 text-muted">An interdisciplinary exploration of Coldplay's music, career, and impact.</p>
-         <section class="mt-5">
-            <h2 class="fs-2 fw-semibold text-dark">Project Overview</h2>
-            <p class="mt-3 text-muted">This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
-            <h3 class="fs-4 mt-4 fw-semibold text-dark">Participating Groups:</h3>
-            <ul class="list-unstyled mt-2 text-muted">
-               <li>Projects Group (Ages 11-13)</li>
-               <li>Digitalization Group (Ages 15-16)</li>
-               <li>Coding and Robotics Group (Ages 16-17)</li>
-               <li>Technology and Engineering 2 Group (Ages 17-18)</li>
-            </ul>
-            <p class="mt-4 text-muted">Supervised by: Prof. Francesc Pérez (<a href="https://agora.xtec.cat/ies-pompeu-fabra-martorell/">Pompeu Fabra High School</a>, Martorell, Barcelona, fperez@iespompeufabra.cat).</p>
+        </div>
+    </nav>
 
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="display-4 fw-bold">Coldplay Artistic Research Project</h1>
+            <p class="lead">An interdisciplinary exploration of music, technology, and creativity</p>
+        </div>
+    </header>
 
-<p class="mt-4 text-muted">In this research project focusing on technology and science, students have proposed a wide variety of innovative ideas to make concerts more sustainable. Their proposals range from smart clothing, augmented and virtual reality, smart bands, brain-computer interfaces, and energy-generating smart caps to 3D designs of various concert gadgets, accompanied by the necessary code to make them function. Additionally, they have developed numerous audio visualizers for Coldplay songs, featuring images and icons related to the band that move in response to the volume and change in shape and color according to the pitch—high or low—of the sound frequencies.</p>
-
-<p class="mt-4 text-muted">To support the students' work, the professor has developed tools that streamline their workflow. These tools include an editor where students can draw and generate SVG or p5.js code, which is then utilized in their Coldplay audio visualizers. The combination of these technologies demonstrates the integration of creative and technical skills in developing sustainable and interactive concert experiences.</p>
-
-<p class="mt-4 text-muted">On this website, you will find short and visually engaging Pecha-Kucha-style videos created by all the students, as well as the tools developed by the professor. Most importantly, the site showcases the resulting projects from the collective work of all the students.</p>
-         </section>
-         <section class="mt-5">
-            <h2 class="fs-2 fw-semibold text-dark">Additional Resources</h2>
-            <div class="row mt-3">
-               <div class="col-md-6">
-                  <h3 class="fs-4 fw-semibold text-dark">Academic Resources</h3>
-                  <ul class="list-unstyled mt-2">
-                     <li><a href="http://github.com/drfperez" target="_blank" class="text-decoration-none text-primary"><i class="fa-brands fa-github me-2"></i>Professor's GitHub</a></li>
-                     <li><a href="https://blocs.xtec.cat/tecno" target="_blank" class="text-decoration-none text-primary"><i class="fas fa-blog me-2"></i>Xtec Blog</a></li>
-                     <li><a href="https://pompeu.neocities.org" target="_blank" class="text-decoration-none text-primary"><i class="fas fa-globe me-2"></i>Neocities Blog</a></li>
-                  </ul>
-               </div>
+    <main class="container py-5">
+        <section>
+            <h2 class="section-title">Project Overview</h2>
+            <p>This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Projects Group</h5>
+                            <p class="card-text">Ages 11-13</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Digitalization Group</h5>
+                            <p class="card-text">Ages 15-16</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Coding and Robotics Group</h5>
+                            <p class="card-text">Ages 16-17</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Technology and Engineering 2 Group</h5>
+                            <p class="card-text">Ages 17-18</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </section>
-      </main>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-   </body>
+        </section>
+
+        <section class="mt-5">
+            <h2 class="section-title">Project Highlights</h2>
+            <p>Students have proposed innovative ideas to make concerts more sustainable, including smart clothing, augmented reality, and energy-generating devices. They've also developed audio visualizers for Coldplay songs featuring interactive elements.</p>
+            
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-custom btn-lg">Explore Projects</a>
+            </div>
+        </section>
+
+        <section class="mt-5">
+            <h2 class="section-title">Resources</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <a href="http://github.com/drfperez" target="_blank" class="btn btn-custom btn-block"><i class="fa-brands fa-github me-2"></i>Professor's GitHub</a>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <a href="https://blocs.xtec.cat/tecno" target="_blank" class="btn btn-custom btn-block"><i class="fas fa-blog me-2"></i>Xtec Blog</a>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <a href="https://pompeu.neocities.org" target="_blank" class="btn btn-custom btn-block"><i class="fas fa-globe me-2"></i>Neocities Blog</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2024 Coldplay Artistic Research Project. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
