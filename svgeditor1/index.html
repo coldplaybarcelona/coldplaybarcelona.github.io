@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Path Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simplify-js@1.2.4/simplify.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        #svg-container {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            width: 100%;
+            height: calc(100vh - 200px);
+            touch-action: none;
+        }
+        #toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            touch-action: manipulation;
+        }
+        #output {
+            width: 100%;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Path Editor</h1>
+    <div id="toolbar">
+        <button id="upload" title="Upload Image"><i data-feather="upload"></i></button>
+        <button id="bezier" title="Cubic Bézier Curve"><i data-feather="edit-3"></i></button>
+        <button id="line" title="Line"><i data-feather="minus"></i></button>
+        <button id="undo" title="Undo"><i data-feather="corner-up-left"></i></button>
+        <button id="clear" title="Clear All"><i data-feather="trash-2"></i></button>
+        <button id="simplify" title="Simplify"><i data-feather="minimize-2"></i></button>
+        <button id="generate" title="Generate SVG"><i data-feather="code"></i></button>
+    </div>
+    <svg id="svg-container"></svg>
+    <textarea id="output" readonly></textarea>
+
+    <script>
+        const svgContainer = document.getElementById('svg-container');
+        const svg = Snap("#svg-container");
+        let currentPath = null;
+        let pathArray = [];
+        let isDrawing = false;
+        let drawMode = 'bezier';
+        let uploadedImage = null;
+
+        feather.replace();
+
+        function resizeSVG() {
+            const width = svgContainer.clientWidth;
+            const height = svgContainer.clientHeight;
+            svg.attr({ width, height });
+            if (uploadedImage) {
+                const imgAspectRatio = uploadedImage.naturalWidth / uploadedImage.naturalHeight;
+                const containerAspectRatio = width / height;
+                let newWidth, newHeight;
+                if (imgAspectRatio > containerAspectRatio) {
+                    newWidth = width;
+                    newHeight = width / imgAspectRatio;
+                } else {
+                    newHeight = height;
+                    newWidth = height * imgAspectRatio;
+                }
+                uploadedImage.attr({ width: newWidth, height: newHeight });
+            }
+        }
+
+        window.addEventListener('resize', resizeSVG);
+        resizeSVG();
+
+        document.getElementById('upload').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        if (uploadedImage) uploadedImage.remove();
+                        uploadedImage = svg.image(event.target.result, 0, 0);
+                        resizeSVG();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        });
+
+        document.getElementById('bezier').addEventListener('click', () => drawMode = 'bezier');
+        document.getElementById('line').addEventListener('click', () => drawMode = 'line');
+
+        document.getElementById('undo').addEventListener('click', () => {
+            if (pathArray.length > 0) {
+                pathArray.pop().remove();
+                updateOutput();
+            }
+        });
+
+        document.getElementById('clear').addEventListener('click', () => {
+            svg.clear();
+            pathArray = [];
+            uploadedImage = null;
+            updateOutput();
+        });
+
+        document.getElementById('generate').addEventListener('click', () => {
+            updateOutput();
+        });
+
+function startDrawing(x, y) {
+    isDrawing = true;
+
+    if (drawMode === 'bezier') {
+        currentPath = svg.path(`M${x},${y}`);
+    } else {
+        currentPath = svg.line(x, y, x, y);
+    }
+
+    currentPath.attr({
+        fill: 'none',
+        stroke: '#000',
+        strokeWidth: 2
+    });
+
+    pathArray.push(currentPath);
+}
+
+function draw(x, y) {
+    if (!isDrawing) return;
+
+    if (drawMode === 'bezier') {
+        const pathD = currentPath.attr('d');
+        currentPath.attr('d', `${pathD} L${x},${y}`);
+    } else {
+        currentPath.attr({ x2: x, y2: y });
+    }
+}
+
+function stopDrawing() {
+    isDrawing = false;
+    currentPath = null;
+}
+
+function simplifyAndDecideBezier(path) {
+    const segments = path.match(/[ML][^ML]*/g);
+    if (!segments || segments.length < 2) return path;
+
+    // Convert segments to points
+    const points = segments.map(segment => {
+       const [x, y] = segment.substring(1).split(',').map(Number);
+       return { x, y };
+   });
+
+   // Simplify points
+   const simplifiedPoints = simplify(points, 1, true);
+
+   // Decide between cubic and quadratic Bézier curves
+   const newPath = ['M' + simplifiedPoints[0].x + ',' + simplifiedPoints[0].y];
+   for (let i = 1; i < simplifiedPoints.length - 1; i++) {
+
+       // Calculate control points for cubic Bézier
+       const cp1xCubic = (2 * simplifiedPoints[i - 1].x + simplifiedPoints[i].x) / 3;
+       const cp1yCubic = (2 * simplifiedPoints[i - 1].y + simplifiedPoints[i].y) / 3;
+
+       const cp2xCubic = (simplifiedPoints[i - 1].x + 2 * simplifiedPoints[i].x) / 3;
+       const cp2yCubic = (simplifiedPoints[i - 1].y + 2 * simplifiedPoints[i].y) / 3;
+
+       // Calculate control point for quadratic Bézier
+       const cpXQuadric =(simplifiedPoints[i - 1].x + simplifiedPoints[i].x)/2 ;
+       const cpYQuadric =(simplifiedPoints[i - 1].y + simplifiedPoints[i].y)/2 ;
+
+       // Use a simple heuristic to decide which to use
+       // Here we use a basic distance check; more sophisticated checks could involve curvature analysis
+       if ((Math.abs(cpXQuadric-simplifiedPoints[i].x)+Math.abs(cpYQuadric-simplifiedPoints[i].y))<5){
+           newPath.push(`Q${cpXQuadric},${cpYQuadric},${simplifiedPoints[i].x},${simplifiedPoints[i].y}`);
+       } else{
+           newPath.push(`C${cp1xCubic},${cp1yCubic},${cp2xCubic},${cp2yCubic},${simplifiedPoints[i].x},${simplifiedPoints[i].y}`);
+       }
+   }
+
+   newPath.push(`L${simplifiedPoints[simplifiedPoints.length - 1].x},${simplifiedPoints[simplifiedPoints.length - 1].y}`);
+
+   return newPath.join(' ');
+}
+
+document.getElementById('simplify').addEventListener('click', () => {
+   pathArray.forEach((path) => {
+       const originalPath = path.attr('d');
+       const smoothedAndSimplifiedPath = simplifyAndDecideBezier(originalPath);
+       path.attr('d', smoothedAndSimplifiedPath);
+   });
+   updateOutput();
+});
+
+function updateOutput() {
+   const pathsData = pathArray.map(path => path.attr('d')).join('\n');
+   document.getElementById('output').value = pathsData || 'No paths drawn yet.';
+}
+
+svgContainer.addEventListener('mousedown', (e) => {
+   startDrawing(e.offsetX, e.offsetY);
+});
+
+svgContainer.addEventListener('mousemove', (e) => {
+   draw(e.offsetX, e.offsetY);
+});
+
+svgContainer.addEventListener('mouseup', stopDrawing);
+svgContainer.addEventListener('mouseleave', stopDrawing);
+
+svgContainer.addEventListener('touchstart', (e) => {
+   e.preventDefault();
+   const touch = e.touches[0];
+   const rect = svgContainer.getBoundingClientRect();
+   startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+
+svgContainer.addEventListener('touchmove', (e) => {
+   e.preventDefault();
+   const touch = e.touches[0];
+   const rect = svgContainer.getBoundingClientRect();
+   draw(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+
+svgContainer.addEventListener('touchend', stopDrawing);
+svgContainer.addEventListener('touchcancel', stopDrawing);
+
+</script>
+</body>
+</html>
