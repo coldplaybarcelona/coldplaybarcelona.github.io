@@ -53,7 +53,6 @@
         const fileInput = document.getElementById('audioFile');
         const audioPlayer = document.getElementById('audioPlayer');
         const shapeSelect = document.getElementById('shapeSelect');
-        const svgVisualizer = document.getElementById('svgVisualizer');
         const shapes = {
             circle: document.getElementById('circle'),
             heart: document.getElementById('heart'),
@@ -104,14 +103,13 @@
             const selectedShape = shapes[shapeSelect.value];
             selectedShape.setAttribute('fill', `hsl(${hue}, 100%, 50%)`);
 
-            if (shapeSelect.value === 'circle') {
-                selectedShape.setAttribute('r', 25 * scale);
-            } else if (shapeSelect.value === 'wepray') {
-                // Mantenir una escala de base 0.5 i aplicar el canvi de mida dinàmicament amb el so
-                const dynamicScale = 0.5 + scale * 0.5; // Escalar dinàmicament basat en el so
-                selectedShape.setAttribute('transform', `scale(${dynamicScale}) translate(${50 - 50 * dynamicScale}, ${50 - 50 * dynamicScale})`);
+            if (shapeSelect.value === 'wepray') {
+                // Apply a base scale of 0.5 and then dynamic scaling
+                const dynamicScale = 0.5 * scale; // Base scale of 0.5
+                selectedShape.setAttribute('transform', `translate(50, 50) scale(${dynamicScale}) translate(-50, -50)`);
             } else {
-                selectedShape.setAttribute('transform', `scale(${scale}) translate(${50 - 50 * scale}, ${50 - 50 * scale})`);
+                // Apply normal dynamic scaling for other shapes
+                selectedShape.setAttribute('transform', `translate(50, 50) scale(${scale}) translate(-50, -50)`);
             }
         }
 
