@@ -1,249 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bézier Curve Editor</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 10px;
-    }
-    canvas {
-      border: 1px solid black;
-      width: 100%; /* Make canvas responsive */
-      height: auto; /* Maintain aspect ratio */
-      touch-action: none; /* Prevents touch from scrolling */
-    }
-    #controls {
-      display: flex;
-      flex-wrap: wrap; /* Allow wrapping for small screens */
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    #controls button {
-      background-color: white;
-      border: 1px solid black;
-      border-radius: 5px;
-      padding: 10px;
-      cursor: pointer;
-      flex: 1; /* Flex-grow for equal width */
-      min-width: 80px; /* Minimum width for buttons */
-    }
-    #controls button.active {
-      background-color: #f0f0f0;
-    }
-    .anchor {
-      fill: red;
-      stroke: black;
-      cursor: pointer;
-    }
-    #svgOutput {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid black;
-      white-space: pre-wrap;
-      background-color: #f9f9f9;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Audio Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        svg {
+            display: block;
+            margin: 20px auto;
+            background-color: #000;
+        }
+        .controls {
+            margin: 20px;
+        }
+        .icon-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .icon-button {
+            background-color: #444;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-button:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
-  <h2>Bézier Curve Editor</h2>
+    <h1>SVG Audio Visualizer</h1>
+    <div class="controls">
+        <input type="file" id="audioFile" accept="audio/*">
+        <br><br>
+        <audio id="audioPlayer" controls></audio>
+        <br><br>
+        <div class="icon-buttons">
+            <button class="icon-button" id="heartButton"><i class="fas fa-heart"></i></button>
+            <button class="icon-button" id="starButton"><i class="fas fa-star"></i></button>
+        </div>
+    </div>
 
-  <div id="controls">
-    <button id="uploadBtn" title="Upload Image">
-      <i data-feather="image"></i>
-    </button>
-    <button id="drawLineBtn" title="Draw Line">
-      <i data-feather="edit"></i>
-    </button>
-    <button id="editLineBtn" title="Edit Line">
-      <i data-feather="scissors"></i>
-    </button>
-    <button id="createBezierBtn" title="Create Bézier Curve">
-      <i data-feather="activity"></i>
-    </button>
-    <button id="generateSvgBtn" title="Generate SVG Path">
-      <i data-feather="code"></i>
-    </button>
-  </div>
+    <svg id="svgVisualizer" width="400" height="400" viewBox="0 0 100 100"></svg>
 
-  <input type="file" id="fileInput" accept="image/*" style="display:none;">
-  <canvas id="canvas" width="500" height="500"></canvas>
-  
-  <div id="svgOutput"></div>
+    <script>
+        const fileInput = document.getElementById('audioFile');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const heartButton = document.getElementById('heartButton');
+        const starButton = document.getElementById('starButton');
+        const svgVisualizer = document.getElementById('svgVisualizer');
 
-  <script src="https://unpkg.com/feather-icons"></script>
-  <script>
-    feather.replace(); // Initialize Feather icons
+        let audioContext, analyser, source, frequencyData;
+        let animationFrameId;
 
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const fileInput = document.getElementById('fileInput');
-    const svgOutput = document.getElementById('svgOutput');
+        const heartPath = "M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30";
+        const starPath = "M50 15 L61.6 35 H85 L66 54 L72 81 L50 65 L28 81 L34 54 L15 35 H38.4 Z";
 
-    let img = null;
-    let curves = [];
-    let selectedCurve = null;
-    let selectedAnchor = null;
-    const anchorRadius = 5;
+        heartButton.addEventListener('click', () => generateShapes('heart'));
+        starButton.addEventListener('click', () => generateShapes('star'));
+        fileInput.addEventListener('change', handleFileUpload);
 
-    let isDragging = false;
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                const audioURL = URL.createObjectURL(file);
+                audioPlayer.src = audioURL;
+                audioPlayer.load();
+                initAudio(audioURL);
+            } else {
+                alert('Please upload a valid audio file.');
+            }
+        }
 
-    // Upload image
-    document.getElementById('uploadBtn').addEventListener('click', () => {
-      fileInput.click();
-    });
+        function initAudio(audioURL) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            frequencyData = new Uint8Array(bufferLength);
 
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          draw();
-        };
-      };
-      reader.readAsDataURL(file);
-    });
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
 
-    // Draw function
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (img) ctx.drawImage(img, 0, 0);
-      
-      curves.forEach((curve, index) => {
-        drawCurve(curve, index === selectedCurve);
-      });
-    }
+            visualize();
+        }
 
-    // Draw the Bézier curve and its anchors
-    function drawCurve(curve, isSelected) {
-      const [p0, cp1, cp2, p1] = curve;
+        function visualize() {
+            animationFrameId = requestAnimationFrame(visualize);
+            analyser.getByteFrequencyData(frequencyData);
 
-      // Draw control lines
-      ctx.beginPath();
-      ctx.moveTo(p0.x, p0.y);
-      ctx.lineTo(cp1.x, cp1.y);
-      ctx.lineTo(cp2.x, cp2.y);
-      ctx.lineTo(p1.x, p1.y);
-      ctx.strokeStyle = isSelected ? 'blue' : 'gray';
-      ctx.stroke();
+            const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
+            const scale = 0.5 + (averageFrequency / 255) * 2;
+            const hue = Math.round((averageFrequency / 255) * 360);
 
-      // Draw curve
-      ctx.beginPath();
-      ctx.moveTo(p0.x, p0.y);
-      ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p1.x, p1.y);
-      ctx.strokeStyle = 'black';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+            const shapes = svgVisualizer.children;
+            for (let shape of shapes) {
+                const dynamicScale = shape.dataset.scale * scale / 3;
+                shape.setAttribute('transform', `translate(${shape.dataset.x}, ${shape.dataset.y}) scale(${dynamicScale})`);
+                shape.setAttribute('fill', `hsl(${hue}, 100%, 50%)`);
+            }
+        }
 
-      // Draw anchors
-      drawAnchor(p0, 'black');
-      drawAnchor(cp1, isSelected ? 'red' : 'black');
-      drawAnchor(cp2, isSelected ? 'red' : 'black');
-      drawAnchor(p1, 'black');
-    }
+        function generateShapes(type) {
+            svgVisualizer.innerHTML = '';
+            const positions = [];
 
-    function drawAnchor(point, color) {
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, anchorRadius, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.stroke();
-    }
+            for (let i = 0; i < 10; i++) {
+                const shape = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                shape.setAttribute('d', type === 'heart' ? heartPath : starPath);
+                shape.setAttribute('fill', 'hsl(0, 100%, 50%)');
 
-    // Add a new curve
-    canvas.addEventListener('dblclick', (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+                let xPos, yPos;
+                do {
+                    xPos = Math.random() * 90 + 5; // 5-95 range
+                    yPos = Math.random() * 90 + 5; // 5-95 range
+                } while (positions.some(pos => Math.hypot(pos.x - xPos, pos.y - yPos) < 15));
 
-      const newCurve = [
-        { x, y }, // Start point
-        { x: x + 50, y: y - 50 }, // Control point 1
-        { x: x + 100, y: y + 50 }, // Control point 2
-        { x: x + 150, y: y } // End point
-      ];
-      curves.push(newCurve);
-      draw();
-    });
+                positions.push({ x: xPos, y: yPos });
 
-    // Select a curve or anchor on click/touch
-    canvas.addEventListener('mousedown', handleStart);
-    canvas.addEventListener('touchstart', handleStart, { passive: false });
+                shape.setAttribute('data-x', xPos);
+                shape.setAttribute('data-y', yPos);
+                shape.setAttribute('data-scale', Math.random() * 0.5 + 0.5); // 0.5-1 range
 
-    function handleStart(event) {
-      event.preventDefault();
-      const { x, y } = getPointerPos(event);
+                shape.setAttribute('transform', `translate(${xPos}, ${yPos}) scale(${shape.dataset.scale / 3})`);
+                svgVisualizer.appendChild(shape);
+            }
+        }
 
-      selectedCurve = null;
-      selectedAnchor = null;
-
-      curves.forEach((curve, curveIndex) => {
-        curve.forEach((point, anchorIndex) => {
-          if (isWithinAnchor(x, y, point)) {
-            selectedCurve = curveIndex;
-            selectedAnchor = anchorIndex;
-            isDragging = true;
-          }
+        audioPlayer.addEventListener('play', () => {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
         });
-      });
-
-      draw();
-    }
-
-    // Move anchor with mouse/touch
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('touchmove', handleMove, { passive: false });
-
-    function handleMove(event) {
-      if (!isDragging || selectedCurve === null || selectedAnchor === null) return;
-      event.preventDefault();
-      const { x, y } = getPointerPos(event);
-
-      curves[selectedCurve][selectedAnchor] = { x, y };
-      draw();
-    }
-
-    // Stop dragging
-    canvas.addEventListener('mouseup', () => { isDragging = false; });
-    canvas.addEventListener('touchend', () => { isDragging = false; });
-
-    // Utility to get pointer (mouse or touch) position
-    function getPointerPos(event) {
-      const rect = canvas.getBoundingClientRect();
-      let x, y;
-      if (event.touches) {
-        x = event.touches[0].clientX - rect.left;
-        y = event.touches[0].clientY - rect.top;
-      } else {
-        x = event.clientX - rect.left;
-        y = event.clientY - rect.top;
-      }
-      return { x, y };
-    }
-
-    // Check if a point is within anchor range
-    function isWithinAnchor(x, y, anchor) {
-      return Math.hypot(x - anchor.x, y - anchor.y) < anchorRadius;
-    }
-
-    // Generate SVG Path from Bézier curves
-    document.getElementById('generateSvgBtn').addEventListener('click', () => {
-      let svgPath = '';
-      curves.forEach((curve) => {
-        const [p0, cp1, cp2, p1] = curve;
-        svgPath += `M ${p0.x},${p0.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${p1.x},${p1.y} `;
-      });
-      svgOutput.textContent = `<path d="${svgPath.trim()}" />`;
-    });
-  </script>
+    </script>
 </body>
 </html>
