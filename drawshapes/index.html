@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG Audio Visualizer</title>
+    <title>Coldplay Audio Visualizer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,8 +32,8 @@
         <select id="shapeSelect">
             <option value="circle">Circle</option>
             <option value="heart">Heart</option>
-            <option value="crescent">Crescent Moon</option>
-            <option value="waning">Waning Moon</option>
+            <option value="wepray">We pray</option>
+            <option value="cross">Cross</option>
         </select>
     </div>
 
@@ -41,12 +41,12 @@
         <circle id="circle" cx="50" cy="50" r="25" fill="hsl(200, 100%, 50%)" />
         <path id="heart" d="M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30" fill="hsl(200, 100%, 50%)" style="display:none;" />
         
-        <path id="crescent" d="M36.5,11.2c0-6.4,5.2-11.4,11.4-11.4c6.4,0,11.4,5.2,11.4,11.4c0,6.4-5.2,11.4-11.4,11.4S36.5,17.4,36.5,11.2z M54.1,24.9
+        <path id="wepray" d="M36.5,11.2c0-6.4,5.2-11.4,11.4-11.4c6.4,0,11.4,5.2,11.4,11.4c0,6.4-5.2,11.4-11.4,11.4S36.5,17.4,36.5,11.2z M54.1,24.9
 	c-2.9-1.6-6.6-0.5-8.2,2.4l-3.2,5.8c-0.4-3-1.2-5.8-1.9-7c-1.6-3.3-3.7-4.6-3.7-4.6c-11.2-6.4-17.2,5.4-17.3,5.8
 	c-1.1,2.6-2.6,6.9-2.5,15.3c0.4,19.2,11.5,45.1,11.5,45.1H7.3C3.4,87.7,0,90,0,94.2c0,3.7,3.2,6,7,6h29.9c4.5,0,7.9-2.5,8.1-11
 	l0.3-35.5l11.4-20.8C58.1,30,57,26.4,54.1,24.9z" fill="hsl(200, 100%, 50%)" style="display:none;" />
         
-        <path id="waning" d="M35,19L 41,19L 41,30L 52,30L 52,36L 41,36L 41,57L 35,57L 35,36L 24,36L 24,30L 35,30L 35,19 Z" fill="hsl(200, 100%, 50%)" style="display:none;" />
+        <path id="cross" d="M35,19L 41,19L 41,30L 52,30L 52,36L 41,36L 41,57L 35,57L 35,36L 24,36L 24,30L 35,30L 35,19 Z" fill="hsl(200, 100%, 50%)" style="display:none;" />
     </svg>
 
     <script>
@@ -57,8 +57,8 @@
         const shapes = {
             circle: document.getElementById('circle'),
             heart: document.getElementById('heart'),
-            crescent: document.getElementById('crescent'),
-            waning: document.getElementById('waning')
+            wepray: document.getElementById('wepray'),
+            cross: document.getElementById('cross')
         };
 
         let audioContext, analyser, source, frequencyData;
@@ -106,7 +106,7 @@
 
             if (shapeSelect.value === 'circle') {
                 selectedShape.setAttribute('r', 25 * scale);
-            } else if (shapeSelect.value === 'crescent') {
+            } else if (shapeSelect.value === 'wepray') {
                 // Escalar la lluna creixent al 50% i ajustar la seva posició
                 selectedShape.setAttribute('transform', `scale(0.5) translate(50, 50)`); 
             } else {
