@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Vivus.js SVG Animation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg id="mySvg" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Your SVG logo code here -->
+    <path d="M50,50 L100,50 L100,100 L50,100 Z" fill="#FF69B4" />
+    <path d="M150,50 L200,50 L200,100 L150,100 Z" fill="#FFC107" />
+    <path d="M50,150 L100,150 L100,200 L50,200 Z" fill="#8BC34A" />
+  </svg>
+  <div id="error-message"></div>
+  <script src="https://cdn.jsdelivr.net/npm/vivus@0.4.0/dist/vivus.min.js"></script>
+  <script>
+    var svg = document.getElementById('mySvg');
+    var paths = svg.querySelectorAll('path');
+    var vivus = new Vivus(svg, {
+      type: 'sync', // or 'async'
+      duration: 5,
+      start: 'manual',
+      animTimingFunction: Vivus.EASE_IN_OUT,
+      animRepeat: true,
+      animLoop: true,
+      onReady: function() {
+        console.log('onReady');
+        paths.forEach(function(path) {
+          path.style.strokeDasharray = path.getTotalLength();
+          path.style.strokeDashoffset = path.getTotalLength();
+        });
+      },
+      onStep: function(step) {
+        console.log('onStep');
+        paths.forEach(function(path) {
+          var offset = path.getTotalLength() * step;
+          path.style.strokeDashoffset = offset;
+        });
+      }
+    });
+    vivus.play();
+    console.log('Animation started');
+  </script>
+</body>
+</html>
