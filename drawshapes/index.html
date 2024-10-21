@@ -107,8 +107,9 @@
             if (shapeSelect.value === 'circle') {
                 selectedShape.setAttribute('r', 25 * scale);
             } else if (shapeSelect.value === 'wepray') {
-                // Escalar la lluna creixent al 50% i ajustar la seva posició
-                selectedShape.setAttribute('transform', `scale(0.5) translate(50, 50)`); 
+                // Mantenir una escala de base 0.5 i aplicar el canvi de mida dinàmicament amb el so
+                const dynamicScale = 0.5 + scale * 0.5; // Escalar dinàmicament basat en el so
+                selectedShape.setAttribute('transform', `scale(${dynamicScale}) translate(${50 - 50 * dynamicScale}, ${50 - 50 * dynamicScale})`);
             } else {
                 selectedShape.setAttribute('transform', `scale(${scale}) translate(${50 - 50 * scale}, ${50 - 50 * scale})`);
             }
