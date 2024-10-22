@@ -47,19 +47,23 @@
         l0.3-35.5l11.4-20.8C58.1,30,57,26.4,54.1,24.9z" fill="hsl(200, 100%, 50%)" style="display:none;" />
         <path id="cross" d="M35,19L 41,19L 41,30L 52,30L 52,36L 41,36L 41,57L 35,57L 35,36L 24,36L 24,30L 35,30L 35,19 Z" fill="hsl(200, 100%, 50%)" style="display:none;" />
 
-        <!-- Coldplay shape added with initial scale -->
-        <g id="coldplay" style="display:none;" fill="hsl(200, 100%, 50%)" transform="translate(10, 50) scale(0.15)">
+        <!-- Coldplay shape added -->
+        <g id="coldplay" style="display:none;" fill="hsl(200, 100%, 50%)" transform="translate(10, 50)">
             <!-- Paths -->
             <path d="M 52.052996,16.980703 C 33.451377,19.950086 17.293884,53.581773 51.100807,66.970622 5.1483425,68.415607 19.416639,10.249047 52.052996,16.980703 Z" />
             <path d="M 163.7765,20.313364 C 145.96421,56.266758 187.0831,68.34424 199.95968,56.179148 170.72448,84.278014 137.89693,40.104811 163.7765,20.313364 Z" />
             <!-- Circles -->
             <circle cx="104.26469" cy="42.055012" r="25.709103" />
             <circle cx="524.97351" cy="29.359158" r="8.093606" />
-            <path d="m 225.19268,18.250288 c 44.99697,-4.174294 42.27784,55.063459 -0.31739,49.196429 28.37951,-13.011974 19.75892,-41.161638 0.31739,-49.196429 z" />
-            <path d="m 281.21313,30.470046 c 29.49604,-31.44835306 64.49876,15.019663 35.23099,35.548387 12.45541,-19.491564 -5.30028,-48.988541 -35.23099,-35.548387 z" />
-            <path d="m 359.45133,22.217742 c -31.2637,28.678816 20.55628,61.326966 35.54838,34.754896 -22.12538,15.262315 -51.70162,-7.305059 -35.54838,-34.754896 z" />
-            <path d="m 418.48704,50.78341 c 9.07623,-27.461167 38.79822,-24.560657 49.03773,0.793491 4.28895,-36.343906 -52.51059,-42.6516151 -49.03773,-0.793491 z"/>
-            <path d="m 486.25115,21.265553 c 35.63671,-7.300115 44.13556,53.322581 1.90438,48.561636 28.86049,-7.128449 21.61231,-44.49379 -1.90438,-48.561636 z"/>
+
+    
+    
+    <path d="m 225.19268,18.250288 c 44.99697,-4.174294 42.27784,55.063459 -0.31739,49.196429 28.37951,-13.011974 19.75892,-41.161638 0.31739,-49.196429 z" />
+    
+<path d="m 281.21313,30.470046 c 29.49604,-31.44835306 64.49876,15.019663 35.23099,35.548387 12.45541,-19.491564 -5.30028,-48.988541 -35.23099,-35.548387 z" />
+    <path d="m 359.45133,22.217742 c -31.2637,28.678816 20.55628,61.326966 35.54838,34.754896 -22.12538,15.262315 -51.70162,-7.305059 -35.54838,-34.754896 z" />
+    <path d="m 418.48704,50.78341 c 9.07623,-27.461167 38.79822,-24.560657 49.03773,0.793491 4.28895,-36.343906 -52.51059,-42.6516151 -49.03773,-0.793491 z"/>
+    <path d="m 486.25115,21.265553 c 35.63671,-7.300115 44.13556,53.322581 1.90438,48.561636 28.86049,-7.128449 21.61231,-44.49379 -1.90438,-48.561636 z"/>
         </g>
     </svg>
 
@@ -108,47 +112,34 @@
         }
 
         function visualize() {
+            animationFrameId = requestAnimationFrame(visualize);
             analyser.getByteFrequencyData(frequencyData);
 
-            // Scale based on audio level
-            const average = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
-            const scale = Math.max(0.2, average / 255); // Ensure it's at least the original size
+            const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
+            const scale = 0.5 + (averageFrequency / 255) * 1.5; // Scale between 0.5 and 2
+            const hue = Math.round((averageFrequency / 255) * 360);
 
-            // Scale shapes
-            Object.keys(shapes).forEach(shape => {
-                if (shape === shapeSelect.value) {
-                    shapes[shape].setAttribute('style', `display:block; transform: translate(0, 0) scale(${scale});`);
-                } else {
-                    shapes[shape].setAttribute('style', 'display:none;');
-                }
-            });
+            const selectedShape = shapes[shapeSelect.value];
+            selectedShape.setAttribute('fill', `hsl(${hue}, 100%, 50%)`);
 
-            animationFrameId = requestAnimationFrame(visualize);
+            // Apply dynamic scaling for Coldplay
+            if (shapeSelect.value === 'wepray' || shapeSelect.value === 'coldplay') {
+                const dynamicScale = 0.2 * scale; // Coldplay is scaled down to 0.2 (5 times smaller)
+                selectedShape.setAttribute('transform', `translate(10, 50) scale(${dynamicScale}) translate(-10, -50)`);
+            } else {
+                selectedShape.setAttribute('transform', `translate(50, 50) scale(${scale}) translate(-50, -50)`);
+            }
         }
 
         function updateShapeVisibility() {
-            const selectedShape = shapeSelect.value;
-            Object.keys(shapes).forEach(shape => {
-                shapes[shape].style.display = (shape === selectedShape) ? 'block' : 'none';
-            });
+            Object.values(shapes).forEach(shape => shape.style.display = 'none');
+            shapes[shapeSelect.value].style.display = 'block';
         }
 
-        audioPlayer.addEventListener('play', function() {
-            if (audioContext) {
-                audioContext.resume().then(() => {
-                    visualize();
-                });
+        audioPlayer.addEventListener('play', () => {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
             }
-        });
-
-        audioPlayer.addEventListener('pause', function() {
-            cancelAnimationFrame(animationFrameId);
-        });
-
-        audioPlayer.addEventListener('ended', function() {
-            cancelAnimationFrame(animationFrameId);
-            // Reset Coldplay shape scale
-            shapes['coldplay'].setAttribute('style', 'display:none; transform:translate(10, 50) scale(0.2);');
         });
     </script>
 </body>
