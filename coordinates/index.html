@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"> <!-- Defineix el conjunt de caràcters utilitzat, en aquest cas UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Assegura que la pàgina es mostri correctament en dispositius mòbils -->
-    <title>Marcar punts en imatge</title> <!-- Títol de la pàgina que es mostra a la pestanya del navegador -->
+    <title>Draw points</title> <!-- Títol de la pàgina que es mostra a la pestanya del navegador -->
     <style>
         /* Estils per al canvas i la llista de punts */
         canvas {
@@ -22,17 +22,17 @@
     </style>
 </head>
 <body>
-    <h1>Carrega una imatge i marca punts</h1> <!-- Títol principal de la pàgina -->
+    <h1>Upload image and draw points</h1> <!-- Títol principal de la pàgina -->
     <input type="file" id="imageLoader" name="imageLoader" accept="image/*"> <!-- Botó per carregar imatges -->
     <br><br> <!-- Salts de línia per separar els elements -->
     <label for="actionSelect">Acció a realitzar:</label> <!-- Etiqueta per al menú desplegable -->
     <select id="actionSelect"> <!-- Menú desplegable per seleccionar l'acció a realitzar -->
-        <option value="coordenades">Veure coordenades (X, Y)</option> <!-- Opció per veure coordenades -->
-        <option value="color">Veure color del punt</option> <!-- Opció per veure el color del punt -->
+        <option value="coordenades">View coordinates (X, Y)</option> <!-- Opció per veure coordenades -->
+        <option value="color">View point colour</option> <!-- Opció per veure el color del punt -->
     </select>
     <br><br> <!-- Salts de línia per separar els elements -->
-    <button id="undoButton">Desfer últim punt</button> <!-- Botó per desfer l'últim punt -->
-    <button id="clearButton">Esborrar tots els punts</button> <!-- Botó per esborrar tots els punts -->
+    <button id="undoButton">Undo last point</button> <!-- Botó per desfer l'últim punt -->
+    <button id="clearButton">Clear all points</button> <!-- Botó per esborrar tots els punts -->
     <br><br> <!-- Salts de línia per separar els elements -->
     <canvas id="imageCanvas"></canvas> <!-- Àrea on es dibuixa la imatge i els punts -->
     
