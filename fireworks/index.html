@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Music Fireworks</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        #controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 10;
+            color: white;
+        }
+        #controls input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input type="file" id="fileInput" accept="audio/*">
+        <audio id="audioPlayer" controls></audio><br>
+        <label>Size: <input type="range" id="sizeSlider" min="1" max="10" value="5"></label>
+        <label>Speed: <input type="range" id="speedSlider" min="1" max="5" value="2"></label>
+        <label>Color Intensity: <input type="range" id="colorSlider" min="50" max="100" value="75"></label>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Sliders
+        const sizeSlider = document.getElementById('sizeSlider');
+        const speedSlider = document.getElementById('speedSlider');
+        const colorSlider = document.getElementById('colorSlider');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let fireworks = [];
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioSource;
+        let analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const objectURL = URL.createObjectURL(file);
+                audioPlayer.src = objectURL;
+                audioPlayer.load();
+                audioPlayer.play();
+
+                audioPlayer.onplay = () => {
+                    if (!audioSource) {
+                        audioSource = audioContext.createMediaElementSource(audioPlayer);
+                        audioSource.connect(analyser);
+                        analyser.connect(audioContext.destination);
+                    }
+                    audioContext.resume();
+                };
+            }
+        });
+
+        class Firework {
+            constructor(x, y, size, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size * parseFloat(sizeSlider.value);
+                this.color = color;
+                this.dy = (Math.random() * parseFloat(speedSlider.value)) + 1;
+                this.lifeSpan = Math.random() * 100 + 50; 
+            }
+
+            update() {
+                this.y -= this.dy;
+                this.size *= 0.98; 
+                this.lifeSpan--;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function createPatternFireworks(centerX, centerY, numParticles) {
+            const angleIncrement = (Math.PI * 2) / numParticles;
+            for (let i = 0; i < numParticles; i++) {
+                const angle = i * angleIncrement + Math.random(); 
+                const radius = Math.random() * 50 + 50; 
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                const size = Math.random() * 5 + 3;
+                const colorHue = (i / numParticles) * 360; 
+                const colorLightness = parseFloat(colorSlider.value); 
+                const color = `hsl(${colorHue}, 100%, ${colorLightness}%)`;
+                fireworks.push(new Firework(x, y, size, color));
+            }
+        }
+
+        function animateFireworks() {
+            requestAnimationFrame(animateFireworks);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            fireworks.forEach((firework, index) => {
+                firework.update();
+                firework.draw();
+                if (firework.size <= 0 || firework.lifeSpan <= 0) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            if (Math.random() > 0.95) { 
+                const avgFrequency = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+                const volumeFactor = avgFrequency / 255;
+
+                const centerX = Math.random() * canvas.width;
+                const centerY = Math.random() * canvas.height / 2; 
+                createPatternFireworks(centerX, centerY, Math.floor(volumeFactor * 30 + 20));
+            }
+        }
+
+        animateFireworks();
+    </script>
+</body>
+</html>
