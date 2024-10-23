@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Audio Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        svg {
+            display: block;
+            margin: 20px auto;
+            background-color: #000;
+        }
+        .controls {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Audio Visualizer</h1>
+    <div class="controls">
+        <label for="songSelect">Choose Song:</label>
+        <select id="songSelect">
+            <option value="song1">Song 1</option>
+            <option value="song2">Song 2</option>
+        </select>
+        <br><br>
+        <input type="file" id="audioFile" accept="audio/*">
+        <br><br>
+        <audio id="audioPlayer" controls></audio>
+    </div>
+
+    <svg id="svgVisualizer" width="400" height="400" viewBox="0 0 100 100">
+        <circle id="circle" cx="50" cy="50" r="25" fill="hsl(200, 100%, 50%)" />
+        <path id="heart" d="M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30" fill="hsl(200, 100%, 50%)" style="display:none;" />
+        <path id="wepray" d="M36.5,11.2c0-6.4,5.2-11.4,11.4-11.4c6.4,0,11.4,5.2,11.4,11.4c0,6.4-5.2,11.4-11.4,11.4S36.5,17.4,36.5,11.2z M54.1,24.9 c-2.9-1.6-6.6-0.5-8.2,2.4l-3.2,5.8c-0.4-3-1.2-5.8-1.9-7c-1.6-3.3-3.7-4.6-3.7-4.6c-11.2-6.4-17.2,5.4-17.3,5.8 c-1.1,2.6-2.6,6.9-2.5,15.3c0.4,19.2,11.5,45.1,11.5,45.1H7.3C3.4,87.7,0,90,0,94.2c0,3.7,3.2,6,7,6h29.9c4.5,0,7.9-2.5,8.1-11 l0.3-35.5l11.4-20.8C58.1,30,57,26.4,54.1,24.9z" fill="hsl(200, 100%, 50%)" style="display:none;" />
+        <path id="cross" d="M35,19L41,19L41,30L52,30L52,36L41,36L41,57L35,57L35,36L24,36L24,30L35,30L35,19Z" fill="hsl(200, 100%, 50%)" style="display:none;" />
+        <g id="coldplay" style="display:none;" fill="hsl(200, 100%, 50%)">
+            <path d="M52.052996,16.980703C33.451377,19.95008617.293884,53.58177351.100807,66.9706225.148342516.980703Z"/>
+            <path d="M163.776520.313364C145.9642156.266758187.083156.179148170.7244884.278014137.8969340.104811163.776520.313364Z"/>
+            <circle cx="104.2646942.055012" r="25.709103"/>
+            <circle cx="524.9735129.359158" r="8.093606"/>
+            <path d="m225.1926818.250288c44.99697,-4.17429442.2778455.063459-0.3173949.19642928.3795113.01197419.75892,-41.161638-0.3173949.196429z"/>
+            <path d="m281.2131330.470046c29.49604,-31.4483530664.4987615.01966335.2309935.54838712.45541,-19.491564-5.30028,-48.988541-35.2309935.548387z"/>
+            <path d="m359.4513322.217742c-31.2637028.678816205.562834.754896-22.1253815.262315-51.70162,-7.305059-35.5483834.754896z"/>
+            <path d="m418.4870450.78341c9.07623,-27.46116738.7982224.56065749.037730.7934914.28895,-36.343906-52.51059,-42.651615149.037730.793491z"/>
+            <path d="m486.2511521.265553c35.63671,-7.30011544.1355653.3225811.9043848.56163628.86049,-7.12844921.61231,-44.49379-1.9043848.561636z"/>
+        </g>
+    </svg>
+
+    <script>
+        const fileInput = document.getElementById('audioFile');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const songSelect = document.getElementById('songSelect');
+        const shapes = {
+            circle: document.getElementById('circle'),
+            heart: document.getElementById('heart'),
+            wepray: document.getElementById('wepray'),
+            cross: document.getElementById('cross'),
+            coldplay: document.getElementById('coldplay')
+        };
+
+        let audioContext, analyser, source, frequencyData;
+        let animationFrameId;
+        let cycleInterval;
+        let currentShapeIndex = 0;
+        const shapeOrderSong1 = ['circle', 'heart', 'wepray', 'cross', 'coldplay'];
+        const shapeOrderSong2 = ['circle', 'heart', 'wepray', 'cross'];
+        const durationsSong1 = [5000, 6000, 7000, 9000, 999999]; // Last shape stays for the rest of the song
+        const durationsSong2 = [4000, 8000, 6000, 10000, 999999]; // Last shape stays for the rest of the song
+
+        fileInput.addEventListener('change', handleFileUpload);
+        songSelect.addEventListener('change', resetVisualizer);
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                const audioURL = URL.createObjectURL(file);
+                audioPlayer.src = audioURL;
+                audioPlayer.load();
+                initAudio(audioURL);
+            } else {
+                alert('Please upload a valid audio file.');
+            }
+        }
+
+        function initAudio(audioURL) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            frequencyData = new Uint8Array(bufferLength);
+
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            visualize();
+            startCycleShapes();
+        }
+
+        function visualize() {
+            animationFrameId = requestAnimationFrame(visualize);
+            analyser.getByteFrequencyData(frequencyData);
+
+            const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
+            const scale = averageFrequency / 255;
+
+            const selectedShape = shapes[getCurrentShape()];
+            const hue = Math.round((averageFrequency / 255) * 360);
+            selectedShape.setAttribute('fill', `hsl(${hue}, 100%, 50%)`);
+
+            selectedShape.setAttribute('transform', `scale(${scale + 0.5})`); // Scale shape based on frequency
+        }
+
+        function startCycleShapes() {
+            let totalTime = 0;
+            const shapeOrder = songSelect.value === 'song1' ? shapeOrderSong1 : shapeOrderSong2;
+            const durations = songSelect.value === 'song1' ? durationsSong1 : durationsSong2;
+
+            shapeOrder.forEach((shape, index) => {
+                setTimeout(() => {
+                    currentShapeIndex = index;
+                    updateShapeVisibility();
+                }, totalTime);
+                totalTime += durations[index];
+            });
+
+            cycleInterval = setInterval(() => {
+                currentShapeIndex = (currentShapeIndex + 1) % shapeOrder.length;
+                updateShapeVisibility();
+            }, totalTime);
+        }
+
+        function resetVisualizer() {
+            clearInterval(cycleInterval);
+            if (audioPlayer.src) {
+                audioPlayer.currentTime = 0; // Reset audio to start
+                audioPlayer.pause(); // Pause audio
+            }
+            updateShapeVisibility(); // Hide all shapes initially
+        }
+
+        function getCurrentShape() {
+            const shapeOrder = songSelect.value === 'song1' ? shapeOrderSong1 : shapeOrderSong2;
+            return shapeOrder[currentShapeIndex];
+        }
+
+        function updateShapeVisibility() {
+            Object.keys(shapes).forEach(key => {
+                shapes[key].style.display = key === getCurrentShape() ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
