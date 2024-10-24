@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Visualizer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <title>SVG Audio Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,43 +40,21 @@
         .icon-button:hover {
             background-color: #555;
         }
-        .sliders {
-            margin: 20px;
-        }
-        .slider {
-            margin: 10px 0;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
     </style>
 </head>
 <body>
     <h1>SVG Audio Visualizer</h1>
     <div class="controls">
-        <input type="file" id="audioFile" accept=".mp3,.wav" aria-label="Upload audio file">
+        <input type="file" id="audioFile" accept="audio/*">
         <br><br>
-        <audio id="audioPlayer" controls aria-label="Audio player"></audio>
+        <audio id="audioPlayer" controls></audio>
         <br><br>
         <div class="icon-buttons">
-            <button class="icon-button" id="heartButton" aria-label="Heart shape visualizer"><i class="fas fa-heart"></i></button>
-            <button class="icon-button" id="starButton" aria-label="Star shape visualizer"><i class="fas fa-star"></i></button>
-        </div>
-    </div>
-
-    <div class="sliders">
-        <div class="slider">
-            <label for="shapeScaleSlider">Shape Scale</label>
-            <input type="range" id="shapeScaleSlider" min="0.5" max="2" value="1" step="0.1" aria-label="Shape scale slider">
-        </div>
-        <div class="slider">
-            <label for="sensitivitySlider">Sensitivity</label>
-            <input type="range" id="sensitivitySlider" min="0.1" max="3" value="1" step="0.1" aria-label="Sensitivity slider">
-        </div>
-        <div class="slider">
-            <label for="shapeCountSlider">Number of Shapes</label>
-            <input type="range" id="shapeCountSlider" min="5" max="20" value="10" step="1" aria-label="Number of shapes slider">
+            <button class="icon-button" id="heartButton"><i class="fas fa-heart"></i></button>
+            <button class="icon-button" id="starButton"><i class="fas fa-star"></i></button>
+            <button class="icon-button" id="circleButton"><i class="fas fa-circle"></i></button>
+            <button class="icon-button" id="squareButton"><i class="fas fa-square"></i></button>
+            <button class="icon-button" id="triangleButton"><i class="fas fa-play fa-rotate-270"></i></button>
         </div>
     </div>
 
@@ -87,132 +65,118 @@
         const audioPlayer = document.getElementById('audioPlayer');
         const heartButton = document.getElementById('heartButton');
         const starButton = document.getElementById('starButton');
+        const circleButton = document.getElementById('circleButton');
+        const squareButton = document.getElementById('squareButton');
+        const triangleButton = document.getElementById('triangleButton');
         const svgVisualizer = document.getElementById('svgVisualizer');
-        const shapeScaleSlider = document.getElementById('shapeScaleSlider');
-        const sensitivitySlider = document.getElementById('sensitivitySlider');
-        const shapeCountSlider = document.getElementById('shapeCountSlider');
 
-		let audioContext, analyser, source, frequencyData;
+        let audioContext, analyser, source, frequencyData;
+        let animationFrameId;
 
-		// Dictionary to store shape information
-		const shapesInfo = {
-			'heart': {
-				'path': 'M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30',
-				'color': 'hsl(0, 100%, 50%)'
-			},
-			'star': {
-				'path': 'M50 15 L61.6 35 H85 L66 54 L72 81 L50 65 L28 81 L34 54 L15 35 H38.4 Z',
-				'color': 'hsl(0, 100%, 50%)'
-			}
-		};
+        const heartPath = "M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30";
+        const starPath = "M50 15 L61.6 35 H85 L66 54 L72 81 L50 65 L28 81 L34 54 L15 35 H38.4 Z";
+        const circlePath = "M50,10 A40,40 0 1,0 90,50 A40,40 0 1,0 50,10";
+        const squarePath = "M20 20 H80 V80 H20 Z";
+        const trianglePath = "M50 15 L85 85 H15 Z";
 
-		function generateShapePath(shapeName) {
-			return shapesInfo[shapeName]?.path || null; // Returns the path data for the shape or null if it doesn't exist
-		}
+        heartButton.addEventListener('click', () => generateShapes('heart'));
+        starButton.addEventListener('click', () => generateShapes('star'));
+        circleButton.addEventListener('click', () => generateShapes('circle'));
+        squareButton.addEventListener('click', () => generateShapes('square'));
+        triangleButton.addEventListener('click', () => generateShapes('triangle'));
 
-		function generateShapes(type) {
-			svgVisualizer.innerHTML = '';
-			const positions = [];
-			
-			const numberOfShapes = parseInt(shapeCountSlider.value);
+        fileInput.addEventListener('change', handleFileUpload);
 
-			for (let i = 0; i < numberOfShapes; i++) {
-				const shapePath = generateShapePath(type);
-				if (!shapePath) continue;
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                const audioURL = URL.createObjectURL(file);
+                audioPlayer.src = audioURL;
+                audioPlayer.load();
+                initAudio(audioURL);
+            } else {
+                alert('Please upload a valid audio file.');
+            }
+        }
 
-				const shape = document.createElementNS("http://www.w3.org/2000/svg", "path");
-				shape.setAttribute('d', shapePath);
-				shape.setAttribute('fill', shapesInfo[type].color);
+        function initAudio(audioURL) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            frequencyData = new Uint8Array(bufferLength);
 
-				let xPos, yPos;
-				do {
-					xPos = Math.random() * 90 + 5; // Random position in range
-					yPos = Math.random() * 90 + 5; // Random position in range
-				} while (positions.some(pos => Math.hypot(pos.x - xPos, pos.y - yPos) < 15));
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
 
-				positions.push({ x: xPos, y: yPos });
+            visualize();
+        }
 
-                const scaleFactor = Math.random() * (1 - shapeScaleSlider.value) + shapeScaleSlider.value;
+        function visualize() {
+            animationFrameId = requestAnimationFrame(visualize);
+            analyser.getByteFrequencyData(frequencyData);
 
-				shape.setAttribute('data-x', xPos);
-				shape.setAttribute('data-y', yPos);
-				shape.setAttribute('data-scale', scaleFactor);
-				const baseScale = scaleFactor * shapeScaleSlider.value; // Apply initial scaling
-                shape.setAttribute('transform', `translate(${xPos}, ${yPos}) scale(${baseScale})`);
-				svgVisualizer.appendChild(shape);
-			}
-		}
+            const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
+            const scale = 0.5 + (averageFrequency / 255) * 2;
+            const hue = Math.round((averageFrequency / 255) * 360);
 
-		function handleFileUpload(event) {
-			const file = event.target.files[0];
-			if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav')) {
-				const audioURL = URL.createObjectURL(file);
-				audioPlayer.src = audioURL;
-				audioPlayer.load();
-				initAudio(audioURL);
-				alert('Audio file loaded successfully.');
-			} else {
-				alert('Please upload a valid audio file (MP3 or WAV).');
-			}
-		}
-
-		function initAudio(audioURL) {
-			try {
-				audioContext = new (window.AudioContext || window.webkitAudioContext)();
-				analyser = audioContext.createAnalyser();
-				analyser.fftSize = 256;
-
-				const bufferLength = analyser.frequencyBinCount;
-				frequencyData = new Uint8Array(bufferLength);
-
-				source = audioContext.createMediaElementSource(audioPlayer);
-				source.connect(analyser);
-				analyser.connect(audioContext.destination);
-
-                requestAnimationFrame(visualize);
-			} catch (error) {
-				alert('Error initializing audio context. Please try again.');
-			}
-		}
-
-		function visualize() {
-			requestAnimationFrame(visualize);
-			analyser.getByteFrequencyData(frequencyData);
-
-			const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
-			const frequencyFactor = (averageFrequency / 255) * sensitivitySlider.value; // Sensitivity affects only dynamic response
-			const hue = Math.round((averageFrequency / 255) * 360);
-
-			const shapes = svgVisualizer.children;
-			for (let shape of shapes) {
-                const baseScale = parseFloat(shape.dataset.scale); // Retrieve initial scale factor
-                const dynamicScale = baseScale * (1 + frequencyFactor); // Dynamic component affected by frequency
+            const shapes = svgVisualizer.children;
+            for (let shape of shapes) {
+                const dynamicScale = shape.dataset.scale * scale / 3;
                 shape.setAttribute('transform', `translate(${shape.dataset.x}, ${shape.dataset.y}) scale(${dynamicScale})`);
                 shape.setAttribute('fill', `hsl(${hue}, 100%, 50%)`);
-			}
-		}
+            }
+        }
 
-	    heartButton.addEventListener('click', () => generateShapes('heart'));
-	    starButton.addEventListener('click', () => generateShapes('star'));
-	    fileInput.addEventListener('change', handleFileUpload);
+        function generateShapes(type) {
+            svgVisualizer.innerHTML = '';
+            const positions = [];
+            
+            let pathData;
 
-	    // Add event listeners for sliders to update visualization in real-time
-	    shapeScaleSlider.addEventListener('input', () => updateVisualization());
-	    sensitivitySlider.addEventListener('input', () => updateVisualization());
-	    shapeCountSlider.addEventListener('input', () => updateVisualization());
+            switch(type) {
+                case 'heart':
+                    pathData = heartPath; break;
+                case 'star':
+                    pathData = starPath; break;
+                case 'circle':
+                    pathData = circlePath; break;
+                case 'square':
+                    pathData = squarePath; break;
+                case 'triangle':
+                    pathData = trianglePath; break;
+                default:
+                    return; 
+            }
 
-	    function updateVisualization() {
-	        if (svgVisualizer.children.length > 0) { 
-	            const currentShapeType = svgVisualizer.children[0].getAttribute('d') === shapesInfo['heart'].path ? 'heart' : 'star';
-	            generateShapes(currentShapeType); 
-	        }
-	    }
+            for (let i = 0; i < 10; i++) {
+                const shape = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                shape.setAttribute('d', pathData);
+                shape.setAttribute('fill', 'hsl(0, 100%, 50%)');
 
-	    audioPlayer.addEventListener('play', () => {
-	        if (audioContext && audioContext.state === 'suspended') {
-	            audioContext.resume();
-	        }
-	    });
-    </script>
+                let xPos, yPos;
+                do {
+                    xPos = Math.random() * 90 + 5; // Ensure shapes are within bounds
+                    yPos = Math.random() * 90 + 5; // Ensure shapes are within bounds
+                } while (positions.some(pos => Math.hypot(pos.x - xPos, pos.y - yPos) < 15));
+
+                positions.push({ x: xPos, y: yPos });
+
+                shape.setAttribute('data-x', xPos);
+                shape.setAttribute('data-y', yPos);
+                shape.setAttribute('data-scale', Math.random() * 0.5 + 0.5); // Random scale between .5 and .1
+
+                shape.setAttribute('transform', `translate(${xPos}, ${yPos}) scale(${shape.dataset.scale /3})`);
+                svgVisualizer.appendChild(shape);
+           }
+       }
+
+       audioPlayer.addEventListener('play', () => {
+           if (audioContext && audioContext.state === 'suspended') {
+               audioContext.resume();
+           }
+       });
+   </script>
 </body>
 </html>
