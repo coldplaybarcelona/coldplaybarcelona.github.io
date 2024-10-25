@@ -33,8 +33,8 @@
     <div id="controls">
         <input type="file" id="fileInput" accept="audio/*">
         <audio id="audioPlayer" controls></audio><br>
-        <label>Size: <input type="range" id="sizeSlider" min="1" max="10" value="5"></label>
-        <label>Speed: <input type="range" id="speedSlider" min="1" max="5" value="2"></label>
+        <label>Size Multiplier: <input type="range" id="sizeSlider" min="1" max="10" value="5"></label>
+        <label>Speed Multiplier: <input type="range" id="speedSlider" min="1" max="5" value="2"></label>
         <label>Color Intensity: <input type="range" id="colorSlider" min="50" max="100" value="75"></label>
     </div>
     <canvas id="canvas"></canvas>
@@ -81,18 +81,21 @@
         });
 
         class Firework {
-            constructor(x, y, size, color) {
+            constructor(x, y, baseSize, baseColor) {
                 this.x = x;
                 this.y = y;
-                this.size = size * parseFloat(sizeSlider.value);
-                this.color = color;
-                this.dy = (Math.random() * parseFloat(speedSlider.value)) + 1;
+                this.baseSize = baseSize; 
+                this.baseColor = baseColor;
+                this.size = baseSize;
+                this.color = baseColor;
+                this.dy = Math.random() + 1;
                 this.lifeSpan = Math.random() * 100 + 50; 
             }
 
-            update() {
+            update(volumeFactor) {
+                this.size = this.baseSize * volumeFactor * parseFloat(sizeSlider.value);
+                this.dy = (Math.random() + 1) * parseFloat(speedSlider.value) * volumeFactor;
                 this.y -= this.dy;
-                this.size *= 0.98; 
                 this.lifeSpan--;
             }
 
@@ -104,18 +107,18 @@
             }
         }
 
-        function createPatternFireworks(centerX, centerY, numParticles) {
+        function createPatternFireworks(centerX, centerY, numParticles, volumeFactor) {
             const angleIncrement = (Math.PI * 2) / numParticles;
             for (let i = 0; i < numParticles; i++) {
-                const angle = i * angleIncrement + Math.random(); 
-                const radius = Math.random() * 50 + 50; 
+                const angle = i * angleIncrement;
+                const radius = Math.random() * 50 + 50;
                 const x = centerX + radius * Math.cos(angle);
                 const y = centerY + radius * Math.sin(angle);
-                const size = Math.random() * 5 + 3;
+                const baseSize = Math.random() * 5 + 3;
                 const colorHue = (i / numParticles) * 360; 
                 const colorLightness = parseFloat(colorSlider.value); 
                 const color = `hsl(${colorHue}, 100%, ${colorLightness}%)`;
-                fireworks.push(new Firework(x, y, size, color));
+                fireworks.push(new Firework(x, y, baseSize * volumeFactor, color));
             }
         }
 
@@ -124,22 +127,21 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             analyser.getByteFrequencyData(dataArray);
+            const avgFrequency = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+            const volumeFactor = avgFrequency / 255;
 
             fireworks.forEach((firework, index) => {
-                firework.update();
+                firework.update(volumeFactor);
                 firework.draw();
                 if (firework.size <= 0 || firework.lifeSpan <= 0) {
                     fireworks.splice(index, 1);
                 }
             });
 
-            if (Math.random() > 0.95) { 
-                const avgFrequency = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
-                const volumeFactor = avgFrequency / 255;
-
+            if (Math.random() > 0.9) {
                 const centerX = Math.random() * canvas.width;
-                const centerY = Math.random() * canvas.height / 2; 
-                createPatternFireworks(centerX, centerY, Math.floor(volumeFactor * 30 + 20));
+                const centerY = Math.random() * canvas.height / 2;
+                createPatternFireworks(centerX, centerY, Math.floor(volumeFactor * 30 + 20), volumeFactor);
             }
         }
 
