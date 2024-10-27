@@ -1,47 +1,58 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fireworks en funció d'àudio</title>
+  <title>Audio-based Fireworks</title>
   <style>
     body { margin: 0; overflow: hidden; background-color: #000; }
     #fireworks { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
     #uploader { position: fixed; top: 10px; left: 10px; z-index: 10; }
+    #toggle-debug { position: fixed; top: 10px; right: 10px; z-index: 10; background-color: #333; color: #FFF; padding: 5px 10px; cursor: pointer; }
     #debug-info, #error-info {
       position: fixed; left: 10px; color: #FFF; background: rgba(0, 0, 0, 0.5);
       padding: 10px; font-family: Arial, sans-serif; font-size: 14px; z-index: 10;
     }
-    #debug-info { top: 40px; }
-    #error-info { bottom: 10px; }
+    #debug-info { top: 60px; display: none; } /* Debug info initially hidden */
+    #error-info { bottom: 10px; display: none; }
   </style>
 </head>
 <body>
+  <!-- Audio file uploader for user to upload audio for fireworks display -->
   <input type="file" id="uploader" accept="audio/*">
+  <!-- Toggle button for showing/hiding debug information -->
+  <button id="toggle-debug">Toggle Debug Info</button>
+  <!-- Fireworks display container -->
   <div id="fireworks"></div>
-  
+
+  <!-- Debug information display section -->
   <div id="debug-info">
-    <div>Intensitat: <span id="intensity-value">0</span></div>
+    <div>Intensity: <span id="intensity-value">0</span></div>
     <div>Particles: <span id="particles-value">0</span></div>
     <div>Interval: <span id="interval-value">0</span> ms</div>
-    <div>Brillantor: <span id="brightness-value">0</span></div>
+    <div>Brightness: <span id="brightness-value">0</span></div>
     <div>Decay: <span id="decay-value">0</span></div>
-    <div>Frequència mitjana: <span id="frequency-value">0</span></div>
+    <div>Average Frequency: <span id="frequency-value">0</span></div>
   </div>
 
+  <!-- Error information display section -->
   <div id="error-info">
     <div>Error: <span id="error-message">No errors</span></div>
-    <div>Causa de l'error: <span id="error-cause">N/A</span></div>
+    <div>Error Cause: <span id="error-cause">N/A</span></div>
   </div>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.8.0/dist/index.umd.js"></script>
   <script>
+    // Setting up main containers and elements
     const container = document.getElementById('fireworks');
     const uploader = document.getElementById("uploader");
-    let fireworks;
-    
-    let audioContext, analyser, dataArray;
+    const debugInfo = document.getElementById("debug-info");
+    const toggleDebugButton = document.getElementById("toggle-debug");
 
+    let fireworks; // Fireworks instance
+    let audioContext, analyser, dataArray; // Audio analysis variables
+
+    // Access to debug elements to update their content dynamically
     const intensityEl = document.getElementById("intensity-value");
     const particlesEl = document.getElementById("particles-value");
     const intervalEl = document.getElementById("interval-value");
@@ -51,6 +62,12 @@
     const errorMessageEl = document.getElementById("error-message");
     const errorCauseEl = document.getElementById("error-cause");
 
+    // Toggle debug information visibility
+    toggleDebugButton.onclick = () => {
+      debugInfo.style.display = debugInfo.style.display === "none" ? "block" : "none";
+    };
+
+    // Event listener to handle file upload and audio processing
     uploader.onchange = async (event) => {
       try {
         const file = event.target.files[0];
@@ -58,63 +75,78 @@
           const audioData = await file.arrayBuffer();
           startAudioProcessing(audioData);
         } else {
-          throw new Error("Si us plau, puja un fitxer d'àudio.");
+          throw new Error("Please upload an audio file.");
         }
       } catch (error) {
         errorMessageEl.textContent = error.message;
-        errorCauseEl.textContent = error.cause || "No disponible";
+        errorCauseEl.textContent = error.cause || "Not available";
+        document.getElementById("error-info").style.display = "block"; // Show error info if any
       }
     };
 
+    // Function to initialize audio processing and connect it to the fireworks display
     function startAudioProcessing(audioData) {
       try {
+        // Close previous audio context if any
         if (audioContext) {
           audioContext.close();
         }
+
+        // Initialize new audio context and decode audio data
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         audioContext.decodeAudioData(audioData, (buffer) => {
           const source = audioContext.createBufferSource();
           source.buffer = buffer;
 
+          // Set up the analyser for audio data analysis
           analyser = audioContext.createAnalyser();
           analyser.fftSize = 256;
           const bufferLength = analyser.frequencyBinCount;
           dataArray = new Uint8Array(bufferLength);
 
+          // Connect audio source to analyser and then to destination
           source.connect(analyser);
           analyser.connect(audioContext.destination);
           source.start();
 
+          // Initialize fireworks display if not already started
           if (!fireworks) {
             fireworks = new Fireworks.default(container);
             fireworks.start();
           }
+          // Begin updating fireworks based on audio
           animateFireworks();
         });
       } catch (error) {
         errorMessageEl.textContent = error.message;
-        errorCauseEl.textContent = error.cause || "No disponible";
+        errorCauseEl.textContent = error.cause || "Not available";
+        document.getElementById("error-info").style.display = "block";
       }
     }
 
+    // Function to animate fireworks based on audio frequency data
     function animateFireworks() {
       requestAnimationFrame(animateFireworks);
-      
+
+      // Ensure analyser and data array are ready for data processing
       if (!analyser || !dataArray) return;
 
       analyser.getByteFrequencyData(dataArray);
 
+      // Calculate average frequency for determining fireworks intensity
       const avgFrequency = dataArray.reduce((a, b) => a + b) / dataArray.length;
-      const intensity = Math.min(avgFrequency / 128, 1);
-      const rocketSpawnInterval = Math.max(30, 100 - avgFrequency);
+      const intensity = Math.min(avgFrequency / 128, 1); // Normalize intensity (0-1)
+      const rocketSpawnInterval = Math.max(30, 100 - avgFrequency); // Control rocket interval
 
+      // Update fireworks settings based on intensity and audio data
       fireworks.updateOptions({
-        particles: Math.floor(50 + intensity * 150),
-        delay: { min: rocketSpawnInterval, max: rocketSpawnInterval + 20 },
-        brightness: { min: 50, max: Math.floor(50 + intensity * 50) },
-        decay: { min: Math.max(0.015, intensity * 0.03), max: Math.max(0.03, intensity * 0.05) },
+        particles: Math.floor(50 + intensity * 150), // Adjust particle count
+        delay: { min: rocketSpawnInterval, max: rocketSpawnInterval + 20 }, // Set delay interval
+        brightness: { min: 50, max: Math.floor(50 + intensity * 50) }, // Adjust brightness
+        decay: { min: Math.max(0.015, intensity * 0.03), max: Math.max(0.03, intensity * 0.05) }, // Adjust decay
       });
 
+      // Update debug information display
       intensityEl.textContent = intensity.toFixed(2);
       particlesEl.textContent = Math.floor(50 + intensity * 150);
       intervalEl.textContent = rocketSpawnInterval.toFixed(0);
@@ -122,11 +154,10 @@
       decayEl.textContent = `${Math.max(0.015, intensity * 0.03).toFixed(3)} - ${Math.max(0.03, intensity * 0.05).toFixed(3)}`;
       frequencyEl.textContent = avgFrequency.toFixed(2);
     }
-    
-    // Initialize fireworks
+
+    // Initialize and start fireworks display on page load
     fireworks = new Fireworks.default(container);
     fireworks.start();
-    
   </script>
 </body>
 </html>
