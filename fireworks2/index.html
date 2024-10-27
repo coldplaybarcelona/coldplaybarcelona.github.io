@@ -1,163 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta settings for character set and responsive design -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio-based Fireworks</title>
+  <title>Fireworks Based on Audio</title>
+
   <style>
+    /* Basic styling to ensure a full-screen black background and hidden overflow */
     body { margin: 0; overflow: hidden; background-color: #000; }
+
+    /* Full-screen container for fireworks display */
     #fireworks { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+
+    /* Styling for the audio file uploader input */
     #uploader { position: fixed; top: 10px; left: 10px; z-index: 10; }
-    #toggle-debug { position: fixed; top: 10px; right: 10px; z-index: 10; background-color: #333; color: #FFF; padding: 5px 10px; cursor: pointer; }
+
+    /* Styling for the toggle button */
+    #toggle-info { position: fixed; top: 10px; right: 10px; z-index: 10; padding: 5px 10px; font-size: 14px; cursor: pointer; }
+
+    /* Styling for debug and error information panels */
     #debug-info, #error-info {
       position: fixed; left: 10px; color: #FFF; background: rgba(0, 0, 0, 0.5);
       padding: 10px; font-family: Arial, sans-serif; font-size: 14px; z-index: 10;
     }
-    #debug-info { top: 60px; display: none; } /* Debug info initially hidden */
-    #error-info { bottom: 10px; display: none; }
+
+    /* Position debug info under toggle button and hide initially */
+    #debug-info { top: 50px; display: none; }
+
+    /* Position error info below the debug info */
+    #error-info { display: none; top: 250px; }
   </style>
 </head>
+
 <body>
-  <!-- Audio file uploader for user to upload audio for fireworks display -->
+  <!-- File input for uploading audio files -->
   <input type="file" id="uploader" accept="audio/*">
-  <!-- Toggle button for showing/hiding debug information -->
-  <button id="toggle-debug">Toggle Debug Info</button>
-  <!-- Fireworks display container -->
+
+  <!-- Button to toggle debug information display -->
+  <button id="toggle-info">Show Info</button>
+
+  <!-- Full-screen container for fireworks effect -->
   <div id="fireworks"></div>
 
-  <!-- Debug information display section -->
+  <!-- Debug information panel showing audio and fireworks data -->
   <div id="debug-info">
+    <!-- Instructions section explaining how to use the page -->
+    <div id="instructions" style="margin-bottom: 10px;">
+      <strong>Instructions:</strong> Upload an audio file to see fireworks synchronized with the music. The visual intensity will adapt based on audio volume and frequency.
+    </div>
+    <!-- Display values of various fireworks parameters -->
     <div>Intensity: <span id="intensity-value">0</span></div>
     <div>Particles: <span id="particles-value">0</span></div>
     <div>Interval: <span id="interval-value">0</span> ms</div>
     <div>Brightness: <span id="brightness-value">0</span></div>
     <div>Decay: <span id="decay-value">0</span></div>
     <div>Average Frequency: <span id="frequency-value">0</span></div>
+    <div>Volume: <span id="volume-value">0</span></div>
   </div>
 
-  <!-- Error information display section -->
+  <!-- Error information panel to display issues if they occur -->
   <div id="error-info">
     <div>Error: <span id="error-message">No errors</span></div>
     <div>Error Cause: <span id="error-cause">N/A</span></div>
   </div>
 
+  <!-- Fireworks library for fireworks effects -->
   <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.8.0/dist/index.umd.js"></script>
+
   <script>
-    // Setting up main containers and elements
+    // Reference to the fireworks container in HTML
     const container = document.getElementById('fireworks');
+    
+    // File uploader input for audio file selection
     const uploader = document.getElementById("uploader");
-    const debugInfo = document.getElementById("debug-info");
-    const toggleDebugButton = document.getElementById("toggle-debug");
 
-    let fireworks; // Fireworks instance
-    let audioContext, analyser, dataArray; // Audio analysis variables
+    // Toggle button to show/hide debug information
+    const toggleInfoButton = document.getElementById("toggle-info");
 
-    // Access to debug elements to update their content dynamically
+    // Fireworks instance, to be created on audio playback
+    let fireworks;
+
+    // Variables for audio processing (context, analyser, data)
+    let audioContext, analyser, dataArray;
+
+    // References to debug info HTML elements
     const intensityEl = document.getElementById("intensity-value");
     const particlesEl = document.getElementById("particles-value");
     const intervalEl = document.getElementById("interval-value");
     const brightnessEl = document.getElementById("brightness-value");
     const decayEl = document.getElementById("decay-value");
     const frequencyEl = document.getElementById("frequency-value");
+    const volumeEl = document.getElementById("volume-value");
+
+    // References to error message elements in HTML
     const errorMessageEl = document.getElementById("error-message");
     const errorCauseEl = document.getElementById("error-cause");
 
-    // Toggle debug information visibility
-    toggleDebugButton.onclick = () => {
-      debugInfo.style.display = debugInfo.style.display === "none" ? "block" : "none";
-    };
-
-    // Event listener to handle file upload and audio processing
+    // Event listener for file input to handle audio file selection
     uploader.onchange = async (event) => {
       try {
+        // Retrieve selected file and check if it's an audio file
         const file = event.target.files[0];
         if (file && file.type.startsWith("audio/")) {
+          // Read audio data and start processing it
           const audioData = await file.arrayBuffer();
           startAudioProcessing(audioData);
         } else {
+          // Throw error if the file is not an audio type
           throw new Error("Please upload an audio file.");
         }
       } catch (error) {
+        // Display error messages in the error info panel
         errorMessageEl.textContent = error.message;
         errorCauseEl.textContent = error.cause || "Not available";
-        document.getElementById("error-info").style.display = "block"; // Show error info if any
       }
     };
 
-    // Function to initialize audio processing and connect it to the fireworks display
+    // Function to initialize audio processing
     function startAudioProcessing(audioData) {
       try {
-        // Close previous audio context if any
+        // Close existing audio context if any
         if (audioContext) {
           audioContext.close();
         }
 
-        // Initialize new audio context and decode audio data
+        // Create a new audio context and set up audio nodes
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         audioContext.decodeAudioData(audioData, (buffer) => {
+          // Connect audio buffer source and analyser node
           const source = audioContext.createBufferSource();
           source.buffer = buffer;
 
-          // Set up the analyser for audio data analysis
+          // Create analyser for frequency data analysis
           analyser = audioContext.createAnalyser();
           analyser.fftSize = 256;
+
+          // Frequency data buffer
           const bufferLength = analyser.frequencyBinCount;
           dataArray = new Uint8Array(bufferLength);
 
-          // Connect audio source to analyser and then to destination
+          // Connect nodes for audio output and start playback
           source.connect(analyser);
           analyser.connect(audioContext.destination);
           source.start();
 
-          // Initialize fireworks display if not already started
+          // Initialize fireworks if not already active
           if (!fireworks) {
             fireworks = new Fireworks.default(container);
             fireworks.start();
           }
-          // Begin updating fireworks based on audio
+
+          // Begin animation loop to update fireworks
           animateFireworks();
         });
       } catch (error) {
+        // Display error messages if there's an issue in processing
         errorMessageEl.textContent = error.message;
         errorCauseEl.textContent = error.cause || "Not available";
-        document.getElementById("error-info").style.display = "block";
       }
     }
 
-    // Function to animate fireworks based on audio frequency data
+    // Function to animate fireworks based on audio data
     function animateFireworks() {
+      // Request animation frame to keep this function looping
       requestAnimationFrame(animateFireworks);
 
-      // Ensure analyser and data array are ready for data processing
+      // Exit if analyser or dataArray is not set
       if (!analyser || !dataArray) return;
 
+      // Retrieve frequency data from audio analyser
       analyser.getByteFrequencyData(dataArray);
 
-      // Calculate average frequency for determining fireworks intensity
+      // Calculate average frequency and overall volume
       const avgFrequency = dataArray.reduce((a, b) => a + b) / dataArray.length;
-      const intensity = Math.min(avgFrequency / 128, 1); // Normalize intensity (0-1)
-      const rocketSpawnInterval = Math.max(30, 100 - avgFrequency); // Control rocket interval
+      const volume = dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
 
-      // Update fireworks settings based on intensity and audio data
+      // Normalize intensity and calculate spawn interval for fireworks
+      const intensity = Math.min(avgFrequency / 128, 1);
+      const rocketSpawnInterval = Math.max(30, 100 - avgFrequency);
+
+      // Update fireworks options based on audio intensity and volume
       fireworks.updateOptions({
-        particles: Math.floor(50 + intensity * 150), // Adjust particle count
-        delay: { min: rocketSpawnInterval, max: rocketSpawnInterval + 20 }, // Set delay interval
-        brightness: { min: 50, max: Math.floor(50 + intensity * 50) }, // Adjust brightness
-        decay: { min: Math.max(0.015, intensity * 0.03), max: Math.max(0.03, intensity * 0.05) }, // Adjust decay
+        particles: Math.floor(50 + intensity * 150),
+        delay: { min: rocketSpawnInterval, max: rocketSpawnInterval + 20 },
+        brightness: { min: 50, max: Math.floor(50 + intensity * 50) },
+        decay: { min: Math.max(0.015, intensity * 0.03), max: Math.max(0.03, intensity * 0.05) },
       });
 
-      // Update debug information display
+      // Update debug info display with current values
       intensityEl.textContent = intensity.toFixed(2);
       particlesEl.textContent = Math.floor(50 + intensity * 150);
       intervalEl.textContent = rocketSpawnInterval.toFixed(0);
       brightnessEl.textContent = (50 + intensity * 50).toFixed(2);
       decayEl.textContent = `${Math.max(0.015, intensity * 0.03).toFixed(3)} - ${Math.max(0.03, intensity * 0.05).toFixed(3)}`;
       frequencyEl.textContent = avgFrequency.toFixed(2);
+      volumeEl.textContent = volume.toFixed(2);
     }
 
-    // Initialize and start fireworks display on page load
-    fireworks = new Fireworks.default(container);
-    fireworks.start();
+    // Event listener for toggle button to show/hide debug info, error info, and instructions
+    toggleInfoButton.onclick = () => {
+      // Toggle display of debug-info, error-info, and instructions sections and button text
+      const debugInfo = document.getElementById("debug-info");
+      const errorInfo = document.getElementById("error-info");
+
+      if (debugInfo.style.display === "none") {
+        debugInfo.style.display = "block";
+        errorInfo.style.display = "block";
+        toggleInfoButton.textContent = "Hide Info";
+      } else {
+        debugInfo.style.display = "none";
+        errorInfo.style.display = "none";
+        toggleInfoButton.textContent = "Show Info";
+      }
+    };
   </script>
 </body>
 </html>
