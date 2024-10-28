@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio-Reactive Background</title>
+    <style>
+        /* Ensure the page takes up the full viewport */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <button id="startButton">Start Microphone</button>
+
+    <script>
+        // Get references to the HTML elements
+        const startButton = document.getElementById('startButton');
+        const body = document.body;
+
+        // Initialize audio context and analyzer
+        let audioContext;
+        let analyser;
+        let dataArray;
+
+        // Function to start the microphone and audio analysis
+        async function startMicrophone() {
+            try {
+                // Create a new AudioContext
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Get user media (microphone access)
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                // Create a media stream source from the microphone input
+                const source = audioContext.createMediaStreamSource(stream);
+
+                // Create an analyser node
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+
+                // Connect the source to the analyser
+                source.connect(analyser);
+
+                // Create a Uint8Array to hold the frequency data
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                // Start the animation loop
+                animateBackground();
+
+                // Hide the start button
+                startButton.style.display = 'none';
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+            }
+        }
+
+        // Function to animate the background based on audio input
+        function animateBackground() {
+            // Get the frequency data
+            analyser.getByteFrequencyData(dataArray);
+
+            // Calculate average frequency and volume
+            let sum = 0;
+            let max = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+                if (dataArray[i] > max) max = dataArray[i];
+            }
+            const avgFrequency = sum / dataArray.length;
+            const volume = max / 255; // Normalize to 0-1 range
+
+            // Map audio features to HSL color values
+            const hue = (avgFrequency / 255) * 360; // Map frequency to hue (0-360)
+            const saturation = 50 + (volume * 50); // Map volume to saturation (50-100)
+            const lightness = 30 + (volume * 40); // Map volume to lightness (30-70)
+
+            // Set the background color
+            body.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+            // Request the next animation frame
+            requestAnimationFrame(animateBackground);
+        }
+
+        // Add click event listener to the start button
+        startButton.addEventListener('click', startMicrophone);
+    </script>
+</body>
+</html>
