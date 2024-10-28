@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal Visualizer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #0d335f;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        canvas {
+            border: 2px solid white;
+            max-width: 100%;
+            height: auto;
+        }
+        #audio-upload, #shape-selector {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        #song-title {
+            color: white;
+            margin-top: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+</head>
+<body>
+<h2 style="color: white;">Fractal Audio Visualizer</h2>
+<div class="controls-container">
+    <input type="file" id="audio-upload" accept="audio/*" />
+    <select id="shape-selector">
+        <option value="fractal1">Koch Snowflake</option>
+        <option value="fractal2">Barnsley Fern</option>
+        <option value="fractal3">Sierpinski Triangle</option>
+        <option value="fractal4">Fractal Tree</option>
+    </select>
+    <h2 id="song-title"></h2>
+    <audio id="player" class="plyr" controls></audio>
+</div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+
+<script>
+let amplitude, fft, song, selectedShape = 'fractal1';
+let player;
+
+function setup() {
+    let canvas = createCanvas(600, 600);
+    canvas.parent(document.body);
+    amplitude = new p5.Amplitude();
+    fft = new p5.FFT();
+
+    document.getElementById('audio-upload').addEventListener('change', handleFileUpload);
+    document.getElementById('shape-selector').addEventListener('change', function() {
+        selectedShape = this.value;
+        redraw();
+    });
+
+    player = new Plyr('#player');
+    setInterval(updateDropdownOptions, 5000);
+
+    noLoop();
+}
+
+function updateDropdownOptions() {
+    const shapeSelector = document.getElementById('shape-selector');
+    const currentSelection = shapeSelector.value;
+
+    shapeSelector.innerHTML = '';
+    const newOptions = [
+        { value: 'fractal1', text: 'Koch Snowflake' },
+        { value: 'fractal2', text: 'Barnsley Fern' },
+        { value: 'fractal3', text: 'Sierpinski Triangle' },
+        { value: 'fractal4', text: 'Fractal Tree' }
+    ];
+
+    newOptions.forEach(option => {
+        const optElement = document.createElement('option');
+        optElement.value = option.value;
+        optElement.textContent = option.text;
+        shapeSelector.appendChild(optElement);
+    });
+
+    shapeSelector.value = currentSelection;
+}
+
+function draw() {
+    background('#0d335f');
+    if (!song || !song.isPlaying()) return;
+    let level = amplitude.getLevel();
+
+    if (selectedShape === 'fractal1') {
+        drawKochSnowflake(level);
+    } else if (selectedShape === 'fractal2') {
+        drawBarnsleyFern(level);
+    } else if (selectedShape === 'fractal3') {
+        drawSierpinskiTriangle(level);
+    } else if (selectedShape === 'fractal4') {
+        drawFractalTree(level);
+    }
+}
+
+function drawKochSnowflake(level) {
+   let spectrum = fft.analyze();
+   let avgFreq = spectrum.reduce((a,b) => a + b) / spectrum.length;
+
+   let hue = map(avgFreq, 0, 255, 0, 360);
+   stroke(hue, 100, 50);
+   noFill();
+
+   let depth = floor(map(level, 0, 1, 1, 5));
+   translate(width /2 ,height /3 );
+   kochLine(-200 ,0 ,200 ,0 ,depth );
+   kochLine(200 ,0 ,0 ,346 ,depth );
+   kochLine(0 ,346 ,-200 ,0 ,depth );
+}
+
+function kochLine(x1,y1,x2,y2 ,depth ) {
+   if (depth ===0 ) {
+       line(x1,y1 ,x2,y2 );
+       return ;
+   }
+
+   let dx=(x2 -x1 )/3 ;
+   let dy=(y2 -y1 )/3 ;
+
+   let x3=x1 +dx ;
+   let y3=y1 +dy ;
+
+   let x4=x3 +cos(-PI /3 )*dx -sin(-PI /3 )*dy ;
+   let y4=y3 +sin(-PI /3 )*dx +cos(-PI /3 )*dy ;
+
+   let x5=x1 +2 *dx ;
+   let y5=y1 +2 *dy ;
+
+   kochLine(x1,y1 ,x3,y3 ,depth -1 );
+   kochLine(x3,y3 ,x4,y4 ,depth -1 );
+   kochLine(x4,y4 ,x5,y5 ,depth -1 );
+   kochLine(x5,y5 ,x2,y2 ,depth -1 );
+}
+
+
+
+function drawBarnsleyFern(level, frequency) {
+    // Comença amb x i y en el punt d'origen
+    let x = 0;
+    let y = 0;
+
+    // Transforma el canvas per centrar el fractal i aplica escala en funció del nivell d'àudio
+    translate(width / 2, height);
+    scale(40 * level + 0.5);  // Escala ajustada segons el nivell d'àudio per canviar la mida
+
+    // Iteracions ajustades per reduir densitat i mostrar detalls
+    for (let i = 0; i < 5000; i++) {  
+        let nextX, nextY;
+        let r = random(1);  // Tria una transformació aleatòria
+
+        // Defineix el color en format HSL, variant amb la freqüència mitjana
+        let hue = map(frequency, 0, 255, 100, 360);  // Assigna un color viu amb HSL
+        stroke(`hsl(${hue}, 80%, 50%)`);  // Ajusta saturació i lluminositat
+        strokeWeight(0.5);  // Densitat de punt ajustada per visibilitat
+
+        // Aplica transformacions per generar la fulla de Barnsley
+        if (r < 0.01) {
+            nextX = 0;
+            nextY = 0.16 * y;
+        } else if (r < 0.86) {
+            nextX = 0.85 * x + 0.04 * y;
+            nextY = -0.04 * x + 0.85 * y + 1.6;
+        } else if (r < 0.93) {
+            nextX = 0.2 * x - 0.26 * y;
+            nextY = 0.23 * x + 0.22 * y + 1.6;
+        } else {
+            nextX = -0.15 * x + 0.28 * y;
+            nextY = 0.26 * x + 0.24 * y + 0.44;
+        }
+
+        // Dibuixa el punt a la nova posició
+        point(nextX, -nextY);
+        x = nextX;
+        y = nextY;
+    }
+}
+
+
+
+function drawSierpinskiTriangle(level) {
+   let spectrum = fft.analyze();
+   let avgFreq = spectrum.reduce((a,b) => a + b) / spectrum.length;
+
+   let hue = map(avgFreq, 0, 255, 0, 360);
+   
+   colorMode(HSL);
+   fill(hue,100,50);
+   noStroke();
+   
+   let depth=floor(map(level ,0 ,1 ,1 ,6 ));
+   
+   sierpinski(width /4,height -50,width -width /4,height -50,width /2,50,depth );
+   
+   colorMode(RGB); // Reset color mode
+}
+
+function sierpinski(x1,y1,x2,y2,x3,y3,depth) {
+     if (depth ===0 ) {
+         triangle(x1,y1,x2,y2,x3,y3);
+         return ;
+     }
+
+     let x12=(x1+x2)/2 ;
+     let y12=(y1+y2)/2 ;
+     let x23=(x2+x3)/2 ;
+     let y23=(y2+y3)/2 ;
+     let x31=(x3+x1)/2 ;
+     let y31=(y3+y1)/2 ;
+
+     sierpinski(x1,y1,x12,y12,x31,y31,depth-1);
+     sierpinski(x12,y12,x2,y2,x23,y23,depth-1);
+     sierpinski(x31,y31,x23,y23,x3,y3,depth-1);
+}
+
+function drawFractalTree(level) {
+     translate(width /2,height );
+
+     let len=map(level ,0 ,1,height /10,height /3 );
+
+     let spectrum=fft.analyze();
+     let avgFreq=spectrum.reduce((a,b)=>a+b)/spectrum.length ;
+     let hue=map(avgFreq ,0 ,255 ,0 ,360 );
+
+     colorMode(HSL );
+     stroke(hue ,100 ,50 );
+     strokeWeight(2 );
+
+     branch(len );
+
+     colorMode(RGB ); // Reset color mode
+}
+
+function branch(len) {
+     line(0 ,0 ,0 ,-len );
+     translate(0 ,-len );
+
+     if (len >4 ) { 
+         push();
+         rotate(PI /6 ); 
+         branch(len *0.67 ); 
+         pop();
+
+         push();
+         rotate(-PI /6 ); 
+         branch(len *0.67 ); 
+         pop();
+     }
+}
+function handleFileUpload(event) {
+    let file = event.target.files[0];
+    if (file && file.type.startsWith('audio/')) {
+        let fileURL = URL.createObjectURL(file);
+        document.getElementById('player').src = fileURL;
+        document.getElementById('song-title').textContent = file.name;
+
+        loadSound(fileURL, soundLoaded);
+    } else {
+        console.error('Please upload a valid audio file');
+    }
+}
+
+function soundLoaded(loadedSong) {
+    if (song && song.isPlaying()) {
+        song.stop();
+    }
+    song = loadedSong;
+    song.play();
+    amplitude.setInput(song);
+    fft.setInput(song);
+    loop();
+}
+</script>
+</body>
+</html>
