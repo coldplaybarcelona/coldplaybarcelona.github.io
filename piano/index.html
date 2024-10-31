@@ -92,9 +92,12 @@
         return Tone.Frequency(note).toFrequency();
     }
 
-    // Map frequency to HSL color
+    // Map frequency to HSL color from 0 to 360
     function frequencyToHSL(frequency) {
-        const hue = (frequency % 360); // Scale frequency to 0-360 range
+        const minFreq = 261.63; // C4
+        const maxFreq = 1046.50; // C6
+        const normalized = (frequency - minFreq) / (maxFreq - minFreq);
+        const hue = Math.round(normalized * 360);
         return `hsl(${hue}, 100%, 50%)`;
     }
 
@@ -116,6 +119,7 @@
 
             // Change the key background color temporarily
             key.style.backgroundColor = color;
+            key.style.transition = "background-color 0.5s"; // Smooth transition
 
             // Reset the key color after 500ms
             setTimeout(() => {
