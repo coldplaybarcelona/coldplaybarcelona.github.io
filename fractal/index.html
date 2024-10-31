@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal Audio Visualizer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #0d335f;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        canvas {
+            border: 2px solid white;
+            max-width: 100%;
+            height: auto;
+        }
+        #audio-upload, #shape-selector {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        #song-title {
+            color: white;
+            margin-top: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+</head>
+<body>
+<h2 style="color: white;">Fractal Audio Visualizer</h2>
+<div class="controls-container">
+    <input type="file" id="audio-upload" accept="audio/*" />
+    <select id="shape-selector">
+        <option value="fractal5">Mandelbrot Set</option>
+        <option value="fractal6">Julia Set</option>
+        <option value="fractal7">Burning Ship Fractal</option>
+        <option value="fractal8">Multibrot Fractal</option>
+    </select>
+    <h2 id="song-title"></h2>
+    <audio id="player" class="plyr" controls></audio>
+</div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+
+<script>
+
+let amplitude, fft, song, selectedShape = 'fractal5';
+let player;
+
+function setup() {
+    let canvas = createCanvas(600, 600);
+    canvas.parent(document.body);
+    pixelDensity(1);
+    amplitude = new p5.Amplitude();
+    fft = new p5.FFT();
+
+    document.getElementById('audio-upload').addEventListener('change', handleFileUpload);
+    document.getElementById('shape-selector').addEventListener('change', function() {
+        selectedShape = this.value;
+        redraw();
+    });
+
+    player = new Plyr('#player');
+    noLoop();
+}
+
+function draw() {
+    background('#0d335f');
+    if (!song || !song.isPlaying()) return;
+
+    let level = amplitude.getLevel();
+    let spectrum = fft.analyze();
+    
+    if (selectedShape === 'fractal5') {
+        drawMandelbrot(level, spectrum);
+    } else if (selectedShape === 'fractal6') {
+        drawJuliaSet(level, spectrum);
+    } else if (selectedShape === 'fractal7') {
+        drawBurningShip(level, spectrum);
+    } else if (selectedShape === 'fractal8') {
+        drawMultibrot(level, spectrum);
+    }
+}
+
+function drawMandelbrot(level, spectrum) {
+    loadPixels();
+    let maxIterations = floor(map(level, 0, 1, 80, 300)); // More iterations for detail
+    
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            let a = map(x, 0, width, -2.5, 1.5); // Slightly wider range
+            let b = map(y, 0, height, -1.5, 1.5);
+            
+            let ca = a, cb = b;
+            let n = 0;
+
+            while (n < maxIterations) {
+                let aa = a * a - b * b;
+                let bb = 2 * a * b;
+                a = aa + ca;
+                b = bb + cb;
+                if (abs(a + b) > 16) break;
+                n++;
+            }
+
+            let bright = map(spectrum[x % spectrum.length], 0, 255, 0, 255);
+            let hueValue = map(n, 0, maxIterations, 0, 255);
+            let pix = (x + y * width) * 4;
+            pixels[pix + 0] = bright * sin(hueValue) * level * 255;
+            pixels[pix + 1] = bright * cos(hueValue) * 255;
+            pixels[pix + 2] = bright;
+            pixels[pix + 3] = 255;
+        }
+    }
+    updatePixels();
+}
+
+function drawJuliaSet(level, spectrum) {
+    loadPixels();
+    let maxIterations = floor(map(level, 0, 1, 80, 300));
+    
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            let zx = map(x, 0, width, -1.5, 1.5);
+            let zy = map(y, 0, height, -1.5, 1.5);
+            const cRe = -0.7 + level * cos(frameCount * level);
+            const cIm = sin(frameCount * level);
+            let n = 0;
+
+            while (n < maxIterations) {
+                let xtemp = zx * zx - zy * zy + cRe;
+                zy = 2 * zx * zy + cIm;
+                zx = xtemp;
+                if (zx * zx + zy * zy > 4) break;
+                n++;
+            }
+
+            let bright = map(spectrum[x % spectrum.length], 0, 255, 0, 255);
+            let hueValue = map(n, 0, maxIterations, 0, 255);
+            let pix = (x + y * width) * 4;
+            pixels[pix + 0] = bright * tan(hueValue) * level * 255;
+            pixels[pix + 1] = bright * cos(hueValue) * level * 255;
+            pixels[pix + 2] = bright;
+            pixels[pix + 3] = 255;
+        }
+    }
+    updatePixels();
+}
+
+function drawBurningShip(level, spectrum) {
+    loadPixels();
+    let maxIterations = floor(map(level, 0, 1, 80, 300));
+    
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            let a = map(x, 0, width, -2, 1.5);
+            let b = map(y, 0, height, -2, 1.5);
+            let ca = a, cb = b;
+            let n = 0;
+
+            while (n < maxIterations) {
+                let aa = a * a - b * b + ca;
+                let bb = abs(2 * a * b) + cb;
+                a = aa;
+                b = bb;
+                if (abs(a + b) > 16) break;
+                n++;
+            }
+
+            let bright = map(spectrum[x % spectrum.length], 0, 255, 0, 255);
+            let hueValue = map(n, 0, maxIterations, 0, 255);
+            let pix = (x + y * width) * 4;
+            pixels[pix + 0] = bright * cos(hueValue * level) * 255;
+            pixels[pix + 1] = bright * sin(hueValue * level) * 255;
+            pixels[pix + 2] = bright;
+            pixels[pix + 3] = 255;
+        }
+    }
+    updatePixels();
+}
+
+function drawMultibrot(level, spectrum) {
+    loadPixels();
+    let maxIterations = floor(map(level, 0, 1, 80, 300));
+    let power = map(level, 0, 1, 2, 5);
+    
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            let a = map(x, 0, width, -2, 2);
+            let b = map(y, 0, height, -2, 2);
+            let ca = a, cb = b;
+            let n = 0;
+
+            while (n < maxIterations) {
+                let temp = pow((a * a + b * b), (power / 2));
+                let angle = atan2(b, a) * power;
+                a = temp * cos(angle) + ca;
+                b = temp * sin(angle) + cb;
+                if (a * a + b * b > 16) break;
+                n++;
+            }
+
+            let bright = map(spectrum[x % spectrum.length], 0, 255, 0, 255);
+            let hueValue = map(n, 0, maxIterations, 0, 255);
+            let pix = (x + y * width) * 4;
+            pixels[pix + 0] = bright * tan(hueValue) * 255;
+            pixels[pix + 1] = bright * cos(hueValue * level) * 255;
+            pixels[pix + 2] = bright;
+            pixels[pix + 3] = 255;
+        }
+    }
+    updatePixels();
+}
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        song = loadSound(URL.createObjectURL(file), soundLoaded);
+        document.getElementById('song-title').textContent = file.name;
+    }
+}
+
+function soundLoaded() {
+    song.play();
+    loop();
+}
+</script>
+</body>
+</html>
