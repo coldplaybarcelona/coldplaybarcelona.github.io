@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Audio Analysis with Adjustable Color Mapping</title>
+    <style>
+        <style>
+    /* General page styling */
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+
+    h1, h2, h3 {
+        color: #003366;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-size: 2em;
+        text-align: center;
+    }
+
+    p {
+        margin-bottom: 15px;
+    }
+
+    /* Canvas styling */
+    canvas {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-top: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Info and control sections */
+    #info {
+        background-color: #e8eef1;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .controls, .color-controls {
+        background-color: #e8eef1;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .slider-group {
+        margin-bottom: 15px;
+    }
+
+    /* Color display styling */
+    .color-display {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid #003366;
+        margin-top: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Axis labels styling */
+    .axis-label {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        margin-top: 8px;
+        font-weight: bold;
+    }
+
+    /* Collapsible sections styling */
+    .collapsible {
+        background-color: #003366;
+        color: white;
+        cursor: pointer;
+        padding: 15px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .active, .collapsible:hover {
+        background-color: #00509e;
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #f4f4f9;
+        border-left: 4px solid #003366;
+        border-radius: 0 0 5px 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Button styling */
+    button, input[type="file"] {
+        background-color: #003366;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    button:hover, input[type="file"]:hover {
+        background-color: #00509e;
+    }
+</style>
+
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>Interactive Audio Analysis with Adjustable Color Mapping</h1>
+
+    <div id="info">
+        <p>Upload an audio file or activate the microphone to visualize audio features and customize the color mapping based on audio characteristics.</p>
+        <input type="file" id="audio-upload" accept="audio/*" />
+        <button id="mic-toggle">Activate Microphone</button>
+    </div>
+
+    <div class="controls">
+        <label for="fft-size">FFT Size (Higher = More Detail):</label>
+        <input type="range" id="fft-size" min="256" max="8192" step="256" value="2048">
+        <span id="fft-size-value">2048</span>
+    </div>
+
+    <h2>Waveform (Volume vs. Time)</h2>
+    <canvas id="waveformCanvas" width="800" height="150"></canvas>
+    <div class="axis-label">Time (s)</div>
+
+    <h2>Frequency Analysis (FFT)</h2>
+    <canvas id="fftCanvas" width="800" height="150"></canvas>
+    <div class="axis-label">Frequency (Hz)</div>
+    <p>Average Frequency: <span id="averageFrequency">0</span> Hz</p>
+    <p>Real-Time Volume: <span id="realTimeVolume">0</span></p>
+
+    <h2>Custom Color Mapping</h2>
+    <div class="color-controls">
+        <div class="slider-group">
+            <label for="hue-multiplier">Hue Multiplier:</label>
+            <input type="range" id="hue-multiplier" min="0" max="360" value="1" step="1">
+            <span id="hue-multiplier-value">1</span>
+        </div>
+        <div class="slider-group">
+            <label for="saturation-multiplier">Saturation Multiplier:</label>
+            <input type="range" id="saturation-multiplier" min="0" max="100" value="1" step="1">
+            <span id="saturation-multiplier-value">1</span>
+        </div>
+        <div class="slider-group">
+            <label for="lightness-value">Lightness Value (Fixed):</label>
+            <input type="range" id="lightness-value" min="0" max="100" value="50" step="1">
+            <span id="lightness-value-display">50%</span>
+        </div>
+    </div>
+    <div class="color-display" id="colorDisplay"></div>
+    <p>HSL Color Value: <span id="hslValue">HSL(0, 0%, 50%)</span></p>
+
+    <!-- Collapsible Sections -->
+    <button class="collapsible">How to Use</button>
+    <div class="content">
+      <h3>How to Use</h3>
+      <p>Upload an audio file or click "Activate Microphone" to visualize audio data in real-time. Adjust the sliders to map audio frequency and volume data to HSL color values for custom visual effects.</p>
+      <ul>
+          <li><strong>Hue Multiplier:</strong> Adjusts how much average frequency influences color hue.</li>
+          <li><strong>Saturation Multiplier:</strong> Adjusts how much volume impacts color saturation.</li>
+          <li><strong>Lightness:</strong> Sets a fixed brightness for the color.</li>
+      </ul>
+    </div>
+
+    <button class="collapsible">Understanding FFT and HSL Conversion</button>
+    <div class="content">
+      <h3>Understanding FFT and HSL Conversion</h3>
+      <p><strong>Fast Fourier Transform (FFT):</strong></p>
+      The FFT is used to convert a signal from its original time domain into a frequency domain. The formula for the discrete Fourier transform is:
+      \[ X_k = \sum_{n=0}^{N-1} x_n \cdot e^{-i \frac{2\pi}{N} kn} \]
+      where \(X_k\) is the output complex number representing amplitude and phase at frequency \(k\), \(x_n\) is the input time-domain signal, \(N\) is the number of samples, and \(i\) is the imaginary unit.
+      <p><strong>HSL Conversion:</strong></p>
+      - Hue (\(H\)): Calculated from the average frequency:
+      \[ H = \left(\frac{\text{Average Frequency}}{\text{Max Frequency}}\right) \times 360 \]
+      - Saturation (\(S\)): Based on volume:
+      \[ S = \left(\frac{\text{Volume}}{\text{Max Volume}}\right) \times 100 \]
+      - Lightness (\(L\)): Set at a constant value of \(50\%\).
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const audioUpload = document.getElementById('audio-upload');
+        const micToggle = document.getElementById('mic-toggle');
+        const fftSizeControl = document.getElementById('fft-size');
+        const fftSizeDisplay = document.getElementById('fft-size-value');
+        const waveformCanvas = document.getElementById('waveformCanvas');
+        const fftCanvas = document.getElementById('fftCanvas');
+        const averageFrequencyDisplay = document.getElementById('averageFrequency');
+        const realTimeVolumeDisplay = document.getElementById('realTimeVolume');
+        const colorDisplay = document.getElementById('colorDisplay');
+        const hslValueDisplay = document.getElementById('hslValue');
+        
+        const waveformCtx = waveformCanvas.getContext('2d');
+        const fftCtx = fftCanvas.getContext('2d');
+        
+        const hueMultiplierControl = document.getElementById('hue-multiplier');
+        const saturationMultiplierControl = document.getElementById('saturation-multiplier');
+        const lightnessControl = document.getElementById('lightness-value');
+        
+        const hueMultiplierDisplay = document.getElementById('hue-multiplier-value');
+        const saturationMultiplierDisplay = document.getElementById('saturation-multiplier-value');
+        
+let audioContext, audioSource, analyser, dataArray, bufferLength; let micStream = null;
+
+fftSizeControl.addEventListener('input', (event) => {
+   fftSizeDisplay.textContent = event.target.value; if (analyser) { analyser.fftSize = parseInt(event.target.value); bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength); } });
+
+hueMultiplierControl.addEventListener('input', () => { hueMultiplierDisplay.textContent = hueMultiplierControl.value; });
+
+saturationMultiplierControl.addEventListener('input', () => { saturationMultiplierDisplay.textContent = saturationMultiplierControl.value; });
+
+lightnessControl.addEventListener('input', () => { lightnessDisplay.textContent = lightnessControl.value + '%'; });
+
+audioUpload.addEventListener('change', (event) => { if (audioContext) audioContext.close(); audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (micStream) { micStream.getTracks().forEach(track => track.stop()); } const file = event.target.files[0]; const fileReader = new FileReader(); fileReader.onload = (e) => { audioContext.decodeAudioData(e.target.result, (buffer) => { audioSource = audioContext.createBufferSource(); audioSource.buffer = buffer; analyser = audioContext.createAnalyser(); analyser.fftSize = parseInt(fftSizeControl.value); bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength);audioSource.connect(analyser); analyser.connect(audioContext.destination); audioSource.start(); drawWaveform(); drawFFT(); updateColor(); }); }; fileReader.readAsArrayBuffer(file); });
+
+micToggle.addEventListener('click', () => { if (audioContext) audioContext.close(); audioContext = new (window.AudioContext || window.webkitAudioContext)(); navigator.mediaDevices.getUserMedia({ audio: true }) .then(stream => { micStream = stream; audioSource = audioContext.createMediaStreamSource(stream); analyser = audioContext.createAnalyser(); analyser.fftSize = parseInt(fftSizeControl.value); bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength); audioSource.connect(analyser); drawWaveform(); drawFFT(); updateColor(); }) .catch(error => { console.error("Microphone access denied or not supported", error); }); });
+
+function drawWaveform() { requestAnimationFrame(drawWaveform); analyser.getByteTimeDomainData(dataArray); waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height); waveformCtx.beginPath(); const sliceWidth = waveformCanvas.width / bufferLength; let x = 0; for (let i = 0; i< bufferLength; i++) { const v= dataArray[i] /128.0; const y= v * waveformCanvas.height /2; i === 0 ? waveformCtx.moveTo(x,y) : waveformCtx.lineTo(x,y); x += sliceWidth; } waveformCtx.lineTo(waveformCanvas.width,waveformCanvas.height /2); waveformCtx.stroke(); }
+
+function drawFFT() { requestAnimationFrame(drawFFT); analyser.getByteFrequencyData(dataArray); fftCtx.clearRect(0, 0, fftCanvas.width, fftCanvas.height); let totalFrequency=0; let count=0; for (let i=0; i< bufferLength; i++) { const barHeight=dataArray[i]; fftCtx.fillStyle=`rgb(${barHeight +100},50,50)`; fftCtx.fillRect(i *2.5, fftCanvas.height - barHeight /2,2, barHeight /2); totalFrequency += dataArray[i]; if(dataArray[i] >0) count++; } const avgFreq=count ? totalFrequency /count :0; averageFrequencyDisplay.textContent=avgFreq.toFixed(2); updateColor(); }
+
+function updateColor() { const avgFreq=parseFloat(averageFrequencyDisplay.textContent); const volume=dataArray.reduce((acc,val)=> acc + val,0) /dataArray.length; realTimeVolumeDisplay.textContent=volume.toFixed(2); const hue= avgFreq * hueMultiplierControl.value; const saturation= volume * saturationMultiplierControl.value; const lightness= lightnessControl.value; colorDisplay.style.backgroundColor=`hsl(${hue %360}, ${Math.min(saturation,100)}%, ${lightness}%)`; hslValueDisplay.textContent=`HSL(${(hue %360).toFixed(1)}, ${Math.min(saturation,100).toFixed(1)}%, ${lightness}%)`; }
+
+var coll=document.getElementsByClassName("collapsible"); var i;
+
+for(i=0;i< coll.length;i++) { coll[i].addEventListener("click",function() { this.classList.toggle("active"); var content=this.nextElementSibling;if(content.style.display==="block") { content.style.display ="none"; } else{ content.style.display ="block"; } }); }
+
+</script>
+
+</body>
+
+</html>
