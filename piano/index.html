@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Piano with Colours</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.31/Tone.js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f2f2f2; }
+        .piano { display: flex; justify-content: center; flex-wrap: wrap; max-width: 100vw; }
+        .key {
+            width: 40px;
+            height: 150px;
+            margin: 1px;
+            cursor: pointer;
+            display: inline-block;
+            box-sizing: border-box;
+            border-radius: 5px;
+            transition: transform 0.1s, background-color 0.5s ease;
+        }
+        .white {
+            background: #ffffff;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ccc;
+            position: relative;
+            z-index: 1;
+        }
+        .black {
+            background: #333333;
+            height: 100px;
+            width: 30px;
+            margin-left: -15px;
+            margin-right: -15px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        #note-display {
+            margin-top: 20px;
+            font-size: 1.2em;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        @media (max-width: 600px) {
+            .key { width: 30px; height: 100px; }
+            .black { width: 20px; height: 70px; margin-left: -10px; margin-right: -10px; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Virtual Piano with Full Key Color Effect</h1>
+<div class="piano">
+    <div class="key white" data-note="C4"></div>
+    <div class="key black" data-note="C#4"></div>
+    <div class="key white" data-note="D4"></div>
+    <div class="key black" data-note="D#4"></div>
+    <div class="key white" data-note="E4"></div>
+    <div class="key white" data-note="F4"></div>
+    <div class="key black" data-note="F#4"></div>
+    <div class="key white" data-note="G4"></div>
+    <div class="key black" data-note="G#4"></div>
+    <div class="key white" data-note="A4"></div>
+    <div class="key black" data-note="A#4"></div>
+    <div class="key white" data-note="B4"></div>
+    <div class="key white" data-note="C5"></div>
+    <div class="key black" data-note="C#5"></div>
+    <div class="key white" data-note="D5"></div>
+    <div class="key black" data-note="D#5"></div>
+    <div class="key white" data-note="E5"></div>
+    <div class="key white" data-note="F5"></div>
+    <div class="key black" data-note="F#5"></div>
+    <div class="key white" data-note="G5"></div>
+    <div class="key black" data-note="G#5"></div>
+    <div class="key white" data-note="A5"></div>
+    <div class="key black" data-note="A#5"></div>
+    <div class="key white" data-note="B5"></div>
+</div>
+
+<div id="note-display">Note: -- | Frequency: -- Hz | Color: --</div>
+
+<script>
+    // Synthesizer with reverb effect
+    const reverb = new Tone.Reverb(2).toDestination();
+    const synth = new Tone.Synth().connect(reverb);
+
+    // Function to get note frequency with Tone.js
+    function getFrequency(note) {
+        return Tone.Frequency(note).toFrequency();
+    }
+
+    // Map frequency to HSL color
+    function frequencyToHSL(frequency) {
+        const hue = (frequency % 360); // Scale frequency to 0-360 range
+        return `hsl(${hue}, 100%, 50%)`;
+    }
+
+    // Add click event to each key
+    document.querySelectorAll('.key').forEach(key => {
+        key.addEventListener('click', () => {
+            const note = key.getAttribute('data-note');
+            const frequency = Math.round(getFrequency(note));
+            const color = frequencyToHSL(frequency);
+
+            // Display note, frequency, and color in note-display
+            const display = document.getElementById('note-display');
+            display.textContent = `Note: ${note} | Frequency: ${frequency} Hz | Color: ${color}`;
+            display.style.backgroundColor = color;
+            display.style.color = "#fff"; // White text for better contrast
+
+            // Play note with reverb
+            synth.triggerAttackRelease(note, "8n");
+
+            // Change the key background color temporarily
+            key.style.backgroundColor = color;
+
+            // Reset the key color after 500ms
+            setTimeout(() => {
+                key.style.backgroundColor = "";
+                display.style.backgroundColor = "#ffffff";
+                display.style.color = "#000";
+            }, 500);
+        });
+    });
+</script>
+
+</body>
+</html>
