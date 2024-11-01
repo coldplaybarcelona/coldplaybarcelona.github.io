@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Rendering with Audio</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    #svgContainer {
+      width: 90vw;
+      max-width: 800px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input-wrapper input[type=file] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+    }
+
+    .file-input-wrapper .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f8f8f8;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #microphoneButton, #infoButton {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    #instructions {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>SVG Rendering with Audio</h1>
+  
+  <div id="svgContainer"></div>
+  
+  <div id="instructions">
+    <p>Step 1: Upload an SVG file to visualize</p>
+    <p>Step 2: Upload an MP3 file or use your microphone for audio</p>
+    <p>If you have trouble, check permissions or try a different browser.</p>
+  </div>
+
+  <div id="controls">
+    <div class="file-input-wrapper">
+      <button class="btn">Choose SVG File</button>
+      <input type="file" id="fileInput" accept=".svg" title="Upload SVG">
+    </div>
+    <div class="file-input-wrapper">
+      <button class="btn">Choose Audio File</button>
+      <input type="file" id="audioInput" accept="audio/*" title="Upload Audio">
+    </div>
+    <button id="microphoneButton">Use Microphone</button>
+    <button id="infoButton">Info</button>
+  </div>
+  
+  <script>
+    let audioContext, audioSource, analyser, svgElement;
+
+    document.getElementById('infoButton').addEventListener('click', () => {
+      alert("How to use this tool:\n\n1. Upload an SVG file to visualize.\n" +
+            "2. Choose an audio source:\n   - Upload an audio file (MP3), OR\n   - Use the microphone.\n" +
+            "3. The SVG's size and color will vary based on the audio's volume and frequency.\n\n" +
+            "If you're having issues, try using a different browser.");
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file && file.type === 'image/svg+xml') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('svgContainer').innerHTML = e.target.result;
+          svgElement = document.getElementById('svgContainer').querySelector('svg');
+          svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please upload a valid SVG file.");
+      }
+    });
+
+    function initAudioContext() {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.85;
+    }
+
+    document.getElementById('audioInput').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        const audioURL = URL.createObjectURL(file);
+        const audio = new Audio(audioURL);
+        audio.crossOrigin = "anonymous";
+        audio.loop = true;
+        
+        initAudioContext();
+        audioSource = audioContext.createMediaElementSource(audio);
+        audioSource.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        audio.play();
+        visualizeSVG();
+      } else {
+        alert("Please upload a valid audio file (e.g., MP3).");
+      }
+    });
+
+    document.getElementById('microphoneButton').addEventListener('click', async () => {
+      try {
+        initAudioContext();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioSource = audioContext.createMediaStreamSource(stream);
+        audioSource.connect(analyser);
+        
+        visualizeSVG();
+      } catch (error) {
+        alert("Microphone access is required to use this feature. Please check your browser settings.");
+      }
+    });
+
+    function visualizeSVG() {
+      const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        analyser.getByteFrequencyData(frequencyData);
+
+        const avgVolume = frequencyData.reduce((sum, val) => sum + val, 0) / frequencyData.length;
+        const maxFrequency = Math.max(...frequencyData);
+
+        if (svgElement) {
+          svgElement.style.transform = `scale(${1 + avgVolume / 256})`;
+          svgElement.style.fill = `rgb(${maxFrequency}, ${avgVolume}, ${255 - maxFrequency})`;
+        }
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
