@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Jong Attractor with Audio Reactivity</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #description {
+            max-width: 600px;
+            text-align: center;
+            margin: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid #555;
+            max-width: 90vw;
+            max-height: 90vh;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>De Jong Attractor - Audio Reactive</h2>
+    <div id="description">
+        <p>This visualizer generates a De Jong attractor that responds to audio frequencies and volume. Upload an audio file, and the attractor's colors and density will react to the sound.</p>
+    </div>
+    <div id="controls">
+        <input type="file" id="audioFile" accept="audio/*">
+        <canvas id="attractorCanvas" width="800" height="800"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('attractorCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        let a = 1.4, b = -2.3, c = 2.4, d = -2.1;
+        let audioContext, analyser, dataArray, audioSource;
+        
+        // Function to draw De Jong Attractor
+        function drawDeJongAttractor(volume, frequency) {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = `hsl(${frequency * 2}, 100%, ${Math.min(50 + volume * 50, 100)}%)`;
+            
+            let x = 0, y = 0;
+            const density = Math.floor(50000 + volume * 950000); // React to volume
+
+            for (let i = 0; i < density; i++) {
+                const newX = Math.sin(a * y) - Math.cos(b * x);
+                const newY = Math.sin(c * x) - Math.cos(d * y);
+                x = newX;
+                y = newY;
+
+                const screenX = (x + 2) * width / 4;
+                const screenY = (y + 2) * height / 4;
+
+                ctx.fillRect(screenX, screenY, 1, 1);
+            }
+        }
+
+        // Process audio data
+        function processAudioData() {
+            requestAnimationFrame(processAudioData);
+            
+            if (!dataArray) return;
+
+            analyser.getByteFrequencyData(dataArray);
+            
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            const volume = sum / dataArray.length / 255; // Normalize volume
+            const frequency = dataArray.indexOf(Math.max(...dataArray)); // Get main frequency
+
+            drawDeJongAttractor(volume, frequency);
+        }
+
+        // Set up audio context and analyser
+        function setupAudioProcessing(audio) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            audio.play();
+            processAudioData();
+        }
+
+        // Event listener for file upload
+        document.getElementById('audioFile').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const audio = new Audio(URL.createObjectURL(file));
+                audio.crossOrigin = "anonymous";
+                audio.addEventListener('canplay', () => setupAudioProcessing(audio));
+            }
+        });
+    </script>
+</body>
+</html>
