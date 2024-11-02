@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Jong Attractor Visualization</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #description {
+            max-width: 600px;
+            text-align: center;
+            margin: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        #controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+        .slider-container {
+            text-align: center;
+            color: white;
+        }
+        canvas {
+            border: 1px solid #555;
+            max-width: 90vw;
+            max-height: 90vh;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>De Jong Attractor</h2>
+    <div id="description">
+        <p>The De Jong attractor is a mathematical system that creates intricate, chaotic patterns based on recursive formulas. By adjusting the parameters <em>a</em>, <em>b</em>, <em>c</em>, and <em>d</em>, you can explore a wide range of shapes and designs. Use the sliders below to modify each parameter and observe the effects on the attractor.</p>
+        <p>Try small adjustments to see gradual changes, or larger ones to discover new shapes. The attractor regenerates automatically each time you move a slider.</p>
+    </div>
+    <div id="controls">
+        <div class="slider-container">
+            <label for="sliderA">Parameter a: <span id="valueA">1.4</span></label><br>
+            <input type="range" id="sliderA" min="-3" max="3" step="0.1" value="1.4">
+        </div>
+        <div class="slider-container">
+            <label for="sliderB">Parameter b: <span id="valueB">-2.3</span></label><br>
+            <input type="range" id="sliderB" min="-3" max="3" step="0.1" value="-2.3">
+        </div>
+        <div class="slider-container">
+            <label for="sliderC">Parameter c: <span id="valueC">2.4</span></label><br>
+            <input type="range" id="sliderC" min="-3" max="3" step="0.1" value="2.4">
+        </div>
+        <div class="slider-container">
+            <label for="sliderD">Parameter d: <span id="valueD">-2.1</span></label><br>
+            <input type="range" id="sliderD" min="-3" max="3" step="0.1" value="-2.1">
+        </div>
+    </div>
+    <canvas id="attractorCanvas" width="800" height="800"></canvas>
+
+    <script>
+        const canvas = document.getElementById('attractorCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        let a = 1.4, b = -2.3, c = 2.4, d = -2.1;
+
+        // Function to draw De Jong attractor
+        function drawDeJongAttractor() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+            
+            let x = 0, y = 0;
+
+            for (let i = 0; i < 1000000; i++) {
+                const newX = Math.sin(a * y) - Math.cos(b * x);
+                const newY = Math.sin(c * x) - Math.cos(d * y);
+                x = newX;
+                y = newY;
+
+                const screenX = (x + 2) * width / 4;
+                const screenY = (y + 2) * height / 4;
+
+                ctx.fillRect(screenX, screenY, 1, 1);
+            }
+        }
+
+        // Event listeners for sliders
+        document.getElementById('sliderA').addEventListener('input', (e) => {
+            a = parseFloat(e.target.value);
+            document.getElementById('valueA').innerText = a.toFixed(1);
+            drawDeJongAttractor();
+        });
+
+        document.getElementById('sliderB').addEventListener('input', (e) => {
+            b = parseFloat(e.target.value);
+            document.getElementById('valueB').innerText = b.toFixed(1);
+            drawDeJongAttractor();
+        });
+
+        document.getElementById('sliderC').addEventListener('input', (e) => {
+            c = parseFloat(e.target.value);
+            document.getElementById('valueC').innerText = c.toFixed(1);
+            drawDeJongAttractor();
+        });
+
+        document.getElementById('sliderD').addEventListener('input', (e) => {
+            d = parseFloat(e.target.value);
+            document.getElementById('valueD').innerText = d.toFixed(1);
+            drawDeJongAttractor();
+        });
+
+        // Initial draw
+        drawDeJongAttractor();
+    </script>
+</body>
+</html>
