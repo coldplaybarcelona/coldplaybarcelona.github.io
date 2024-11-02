@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Reactive Buddhabrot Fractal</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #uploadLabel {
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
+            color: black;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 40px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0px 4px 15px rgba(255, 165, 0, 0.6);
+            transition: transform 0.2s ease;
+        }
+        #uploadLabel:hover {
+            transform: scale(1.05);
+        }
+        #audioFile {
+            display: none;
+        }
+        canvas {
+            border: 1px solid #555;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+    </style>
+</head>
+<body>
+    <label id="uploadLabel" for="audioFile">Upload Audio File</label>
+    <input type="file" id="audioFile" accept="audio/*">
+    <canvas id="fractalCanvas" width="800" height="800"></canvas>
+
+    <script>
+        const audioFileInput = document.getElementById('audioFile');
+        const canvas = document.getElementById('fractalCanvas');
+        const ctx = canvas.getContext('2d');
+        let audioContext, audioSource, analyser, dataArray, bufferLength;
+
+        function drawBuddhabrotFractal(brightness) {
+            const maxIter = 500;
+            const scale = 200;
+            const width = canvas.width;
+            const height = canvas.height;
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+
+            for (let i = 0; i < maxIter; i++) {
+                const cx = (Math.random() - 0.5) * 4;
+                const cy = (Math.random() - 0.5) * 4;
+                let zx = cx, zy = cy;
+                let path = [];
+                let iter = 0;
+
+                while (iter < maxIter && zx * zx + zy * zy < 4) {
+                    path.push([zx, zy]);
+                    const xtemp = zx * zx - zy * zy + cx;
+                    zy = 2 * zx * zy + cy;
+                    zx = xtemp;
+                    iter++;
+                }
+
+                if (zx * zx + zy * zy >= 4) {
+                    path.forEach(([px, py]) => {
+                        const x = Math.floor((px + 2) * scale);
+                        const y = Math.floor((py + 2) * scale);
+                        if (x >= 0 && x < width && y >= 0 && y < height) {
+                            const index = (y * width + x) * 4;
+                            data[index] += Math.sin(brightness) * 255; // Red channel
+                            data[index + 1] += Math.cos(brightness) * 128; // Green channel
+                            data[index + 2] += brightness % 128; // Blue channel
+                            data[index + 3] = 255; // Alpha
+                        }
+                    });
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function animateFractal() {
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                const brightness = dataArray.reduce((a, b) => a + b) / bufferLength;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawBuddhabrotFractal(brightness);
+            }
+            requestAnimationFrame(animateFractal);
+        }
+
+        audioFileInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const audioData = URL.createObjectURL(file);
+            const audio = new Audio(audioData);
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioSource = audioContext.createMediaElementSource(audio);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            audioSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+            audio.play();
+
+            animateFractal();
+        });
+    </script>
+</body>
+</html>
