@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <title>Rainbow Audio Visualiser</title>
+<style>
+    .rainbow-text {
+        display: inline-block;
+        font-size: 2em;
+        font-weight: bold;
+        background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+        background-size: 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow 5s linear infinite;
+    }
+
+    @keyframes rainbow {
+        0% { background-position: 0%; }
+        100% { background-position: 100%; }
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #000000;
+        margin: 0;
+    }
+
+    canvas {
+        margin-top: 20px;
+        background-color: #000000;
+        border-radius: 10px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 600px) {
+        .rainbow-text {
+            font-size: 1.5em;
+            text-align: center; /* Ensure text is centered */
+            padding: 10px; /* Add padding for better visibility */
+        }
+        
+        canvas {
+            width: 90%;
+            height: auto; /* Maintain aspect ratio */
+        }
+    }
+
+    @media (orientation: landscape) and (max-width: 600px) {
+        .rainbow-text {
+            font-size: 1.2em; /* Adjust font size for landscape */
+            padding: 5px; /* Additional padding for clarity */
+            text-align: center; /* Center the text */
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
+        }
+        
+        canvas {
+            width: 80%;
+            height: auto; /* Maintain aspect ratio */
+        }
+    }
+
+</style>
+</head>
+<body>
+<h2 class="rainbow-text">Rainbow audio visualiser</h2>
+
+    <!-- Reproductor d'àudio -->
+    <input type="file" accept="audio/*" id="audioFile">
+    <audio id="audioPlayer" controls></audio>
+    <canvas id="rainbowCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioFileInput = document.getElementById('audioFile');
+        const canvas = document.getElementById('rainbowCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let audioContext, analyser, source;
+        const baseColors = [0, 30, 60, 120, 240, 275, 300]; // Tons HSL (vermell, taronja, groc, verd, blau, indi, violeta)
+
+        audioFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                audioPlayer.src = url;
+                audioPlayer.load();
+                initAudioAnalyzer();
+            }
+        });
+
+        function initAudioAnalyzer() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            function drawRainbow() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                analyser.getByteFrequencyData(dataArray);
+
+                const avgFrequency = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+                const volume = Math.max(...dataArray) / 255;
+
+                const maxRadius = 150;
+                const baseRadius = 30;
+
+                for (let i = 0; i < baseColors.length; i++) {
+                    const frequencyFactor = avgFrequency / 255;
+                    const hue = (baseColors[i] + frequencyFactor * 120 - 60) % 360;
+                    const saturation = 50 + (Math.sin(frequencyFactor * Math.PI) * 50); // Adjust saturation
+
+                    const radius = baseRadius + (maxRadius - baseRadius) * volume + (i * 20);
+
+                    ctx.beginPath();
+                    ctx.arc(canvas.width / 2, canvas.height, radius, Math.PI, 0, false);
+                    ctx.lineWidth = 20;
+                    ctx.strokeStyle = `hsl(${hue}, ${saturation}%, 50%)`; // Use saturation instead of lightness
+                    ctx.stroke();
+                }
+
+                requestAnimationFrame(drawRainbow);
+            }
+
+            audioPlayer.addEventListener('play', () => {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                drawRainbow();
+            });
+        }
+    </script>
+</body>
+</html>
