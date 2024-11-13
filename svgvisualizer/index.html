@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Audio Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        svg {
+            display: block;
+            margin: 20px auto;
+            background-color: #000;
+        }
+        .controls {
+            margin: 20px;
+        }
+        .icon-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .icon-button {
+            background-color: #444;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Audio Visualizer</h1>
+    <div class="controls">
+        <input type="file" id="audioFile" accept="audio/*">
+        <br><br>
+        <audio id="audioPlayer" controls></audio>
+        <br><br>
+        <label for="sensitivitySlider">Sensitivity: <span id="sensitivityValue">50</span></label>
+        <input type="range" id="sensitivitySlider" min="1" max="100" value="50" step="1">
+        <br><br>
+        <div class="icon-buttons">
+            <button class="icon-button" id="heartButton"><i class="fas fa-heart"></i></button>
+            <button class="icon-button" id="starButton"><i class="fas fa-star"></i></button>
+            <button class="icon-button" id="circleButton"><i class="fas fa-circle"></i></button>
+            <button class="icon-button" id="squareButton"><i class="fas fa-square"></i></button>
+            <button class="icon-button" id="triangleButton"><i class="fas fa-play fa-rotate-270"></i></button>
+        </div>
+    </div>
+
+    <svg id="svgVisualizer" width="400" height="400" viewBox="0 0 100 100"></svg>
+
+    <script>
+        const fileInput = document.getElementById('audioFile');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const heartButton = document.getElementById('heartButton');
+        const starButton = document.getElementById('starButton');
+        const circleButton = document.getElementById('circleButton');
+        const squareButton = document.getElementById('squareButton');
+        const triangleButton = document.getElementById('triangleButton');
+        const svgVisualizer = document.getElementById('svgVisualizer');
+
+        const sensitivitySlider = document.getElementById('sensitivitySlider');
+        const sensitivityValueDisplay = document.getElementById('sensitivityValue');
+
+        let audioContext, analyser, source, frequencyData;
+        let animationFrameId;
+
+        let sensitivityFactor = sensitivitySlider.value;
+
+        const heartPath = "M50,30 C60,20 70,20 75,30 80,40 70,50 50,70 30,50 20,40 25,30 30,20 40,20 50,30";
+        const starPath = "M50 15 L61.6 35 H85 L66 54 L72 81 L50 65 L28 81 L34 54 L15 35 H38.4 Z";
+        const circlePath = "M50,10 A40,40 0 1,0 90,50 A40,40 0 1,0 50,10";
+        const squarePath = "M20 20 H80 V80 H20 Z";
+        const trianglePath = "M50 15 L85 85 H15 Z";
+
+        heartButton.addEventListener('click', () => generateShapes('heart'));
+        starButton.addEventListener('click', () => generateShapes('star'));
+        circleButton.addEventListener('click', () => generateShapes('circle'));
+        squareButton.addEventListener('click', () => generateShapes('square'));
+        triangleButton.addEventListener('click', () => generateShapes('triangle'));
+
+        fileInput.addEventListener('change', handleFileUpload);
+
+        sensitivitySlider.addEventListener('input', () => {
+            sensitivityValueDisplay.textContent = sensitivitySlider.value;
+            sensitivityFactor = sensitivitySlider.value / 50; // Normalize to a factor
+            updateVisualizationSensitivity(sensitivityFactor);
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                const audioURL = URL.createObjectURL(file);
+                audioPlayer.src = audioURL;
+                audioPlayer.load();
+                initAudio(audioURL);
+            } else {
+                alert('Please upload a valid audio file.');
+            }
+        }
+
+        function initAudio(audioURL) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            frequencyData = new Uint8Array(bufferLength);
+
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            visualize();
+       }
+
+       function visualize() {
+           animationFrameId = requestAnimationFrame(visualize);
+           analyser.getByteFrequencyData(frequencyData);
+
+           const averageFrequency = frequencyData.reduce((a, b) => a + b) / frequencyData.length;
+           const scale = (0.5 + (averageFrequency / 255) * sensitivityFactor);
+           const hue = Math.round((averageFrequency / 255) * 360);
+
+           const shapes = svgVisualizer.children;
+           for (let shape of shapes) {
+               const dynamicScale = shape.dataset.scale * scale /3 ;
+               shape.setAttribute('transform', `translate(${shape.dataset.x}, ${shape.dataset.y}) scale(${dynamicScale})`);
+               shape.setAttribute('fill', `hsl(${hue},100%,50%)`);
+           }
+       }
+
+       function updateVisualizationSensitivity(sensitivity) {
+           // This function can be expanded if additional logic is needed
+       }
+
+       function generateShapes(type) {
+           svgVisualizer.innerHTML = '';
+           const positions = [];
+           
+           let pathData;
+
+           switch(type) {
+               case 'heart':
+                   pathData= heartPath; break;
+               case 'star':
+                   pathData= starPath; break;
+               case 'circle':
+                   pathData= circlePath; break;
+               case 'square':
+                   pathData= squarePath; break;
+               case 'triangle':
+                   pathData= trianglePath; break;
+               default:
+                   return; 
+           }
+
+           for (let i=0; i<10; i++) {
+               const shape=document.createElementNS("http://www.w3.org/2000/svg", "path");
+               shape.setAttribute('d', pathData);
+               shape.setAttribute('fill', 'hsl(0,100%,50%)');
+
+               let xPos,yPos ;
+               do{
+                   xPos=Math.random()*90+5; // Ensure shapes are within bounds
+                   yPos=Math.random()*90+5; // Ensure shapes are within bounds
+               } while (positions.some(pos=>Math.hypot(pos.x-xPos,pos.y-yPos)<15));
+
+               positions.push({x:xPos,y:yPos});
+
+               shape.setAttribute('data-x', xPos);
+               shape.setAttribute('data-y', yPos);
+               shape.setAttribute('data-scale', Math.random()*0.5+0.5); // Random scale between .5 and .1
+
+               shape.setAttribute('transform', `translate(${xPos},${yPos}) scale(${shape.dataset.scale /3 })`);
+               svgVisualizer.appendChild(shape);
+          }
+      }
+
+      audioPlayer.addEventListener('play', () => {
+          if (audioContext && audioContext.state === 'suspended') {
+              audioContext.resume();
+          }
+      });
+   </script>
+</body>
+</html>
