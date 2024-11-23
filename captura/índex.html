@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Completo: Gravar Presentació LibreOffice Impress amb OBS i Aegisub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            margin: 10px 0;
+        }
+        code {
+            background-color: #e1e1e1;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Tutorial Completo: Gravar Presentació LibreOffice Impress amb OBS i Aegisub</h1>
+
+<p>Aquest tutorial et guiarà pas a pas per gravar una presentació de LibreOffice Impress amb OBS, incloent la teva veu, i afegir subtítols utilitzant Aegisub. Aquest procés et permetrà crear vídeos de presentacions amb explicacions i subtítols personalitzats.</p>
+
+<h2>1. Preparar OBS per a la gravació de la presentació</h2>
+<p>Abans de començar la gravació, has de configurar OBS perquè capturi la teva pantalla i el micròfon. Segueix aquests passos:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Descarrega i instal·la OBS des de la seva pàgina oficial: <a href="https://obsproject.com/" target="_blank">obsproject.com</a>.</li>
+    <li><strong>Pas 2:</strong> Obre OBS al teu ordinador.</li>
+    <li><strong>Pas 3:</strong> Afegeix una font de captura per la teva pantalla:
+        <ul>
+            <li>Clica el botó <strong>&#43; (Font)</strong> a la part inferior esquerra, a la secció "Fonts".</li>
+            <li>Selecciona "Captura de pantalla" i anomena la font, per exemple, "Presentació LibreOffice".</li>
+            <li>Escull la pantalla on tens oberta la presentació de LibreOffice Impress.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 4:</strong> Afegeix la font del micròfon per capturar la teva veu:
+        <ul>
+            <li>A la secció "Fonts", clica el botó <strong>&#43; (Font)</strong> i selecciona "Dispositiu d'àudio d'entrada".</li>
+            <li>Escull el micròfon que utilitzes per parlar.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 5:</strong> Si vols capturar tota la pantalla (incloent els enllaços web oberts en la teva presentació), selecciona "Captura de pantalla" en lloc de "Captura de finestra".</li>
+    <li><strong>Pas 6:</strong> Ajusta el volum del micròfon i la captura de pantalla per assegurar-te que la teva veu es senti clarament.</li>
+</ul>
+
+<h2>2. Com començar a gravar la presentació amb OBS</h2>
+<p>Un cop configurades les fonts, és hora de començar a gravar la presentació:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Abre la teva presentació de LibreOffice Impress i selecciona la diapositiva inicial.</li>
+    <li><strong>Pas 2:</strong> A OBS, a la part inferior dreta, clica el botó <strong>Iniciar gravació</strong> per començar a gravar.</li>
+    <li><strong>Pas 3:</strong> Comença a explicar la teva presentació mentre es grava. Recorda que el micròfon ha de captar la teva veu mentre la presentació avança.</li>
+    <li><strong>Pas 4:</strong> Quan acabes la presentació, torna a OBS i clica <strong>Aturar gravació</strong> per finalitzar el vídeo.</li>
+    <li><strong>Pas 5:</strong> El vídeo es desarà al directori que hagis configurat a OBS.</li>
+</ul>
+
+<h2>3. Crear i sincronitzar subtítols amb Aegisub</h2>
+<p>Per afegir subtítols al vídeo, utilitzarem Aegisub. A continuació et guiaré pas a pas sobre com fer-ho:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Descarrega i instal·la Aegisub des de la seva pàgina oficial: <a href="https://www.aegisub.org/" target="_blank">aegisub.org</a>.</li>
+    <li><strong>Pas 2:</strong> Obre Aegisub i carrega el teu vídeo:
+        <ul>
+            <li>Clica a <strong>Archivo</strong> > <strong>Abrir vídeo</strong> i selecciona el vídeo gravat amb OBS.</li>
+            <li>El vídeo es carregarà a la finestra principal de Aegisub.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 3:</strong> Crear subtítols:
+        <ul>
+            <li>A l'àrea de subtítols, veuràs la línia de temps del vídeo. Per cada frase que vulguis subtitular, selecciona el moment exacte en què comença la frase (a la línia de temps) i escriu el subtítol a la columna "Text".</li>
+            <li>Per ajustar el temps de cada subtítol, utilitza els botons de la línia de temps per establir el temps d'inici i fi del subtítol (segons quan es diu la frase).</li>
+            <li>Repetix aquest procés per afegir tots els subtítols del vídeo.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 4:</strong> Ajustar la sincronització:
+        <ul>
+            <li>Reprodueix el vídeo per veure com es veuen els subtítols. Si els temps no coincideixen, ajusta els temps d'inici i final fins que estiguin ben sincronitzats.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 5:</strong> Exportar els subtítols:
+        <ul>
+            <li>Quan hagis afegit tots els subtítols i estiguin sincronitzats, clica a <strong>Archivo</strong> > <strong>Guardar com</strong> i selecciona el format <strong>.srt</strong> (subtítols).</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>4. Incrustar subtítols al vídeo</h2>
+<p>Per incrustar els subtítols al teu vídeo, pots utilitzar un programa com <a href="https://handbrake.fr/" target="_blank">HandBrake</a>. Aquí tens els passos per fer-ho:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Descarrega i instal·la HandBrake des de la seva pàgina oficial: <a href="https://handbrake.fr/" target="_blank">handbrake.fr</a>.</li>
+    <li><strong>Pas 2:</strong> Obre HandBrake i carrega el vídeo gravat amb OBS.</li>
+    <li><strong>Pas 3:</strong> A la secció "Subtítols", selecciona <strong>Afegeix un fitxer de subtítols</strong> i selecciona el fitxer .srt creat amb Aegisub.</li>
+    <li><strong>Pas 4:</strong> Clica a <strong>Iniciar codificació</strong> per crear un nou vídeo amb els subtítols incrustats.</li>
+    <li><strong>Pas 5:</strong> El vídeo amb els subtítols incrustats es guardarà a la ubicació especificada.</li>
+</ul>
+
+<h2>5. Finalitzar i compartir el vídeo</h2>
+<p>Un cop tinguis el teu vídeo amb la presentació gravada i els subtítols incrustats, pots compartir-lo en línia:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Revisa el vídeo per assegurar-te que els subtítols es veuen correctament i estan sincronitzats amb la teva veu.</li>
+    <li><strong>Pas 2:</strong> Pujar el vídeo a una plataforma com YouTube, Vimeo, o qualsevol altre lloc on vulguis compartir la presentació.</li>
+    <li><strong>Pas 3:</strong> Comparteix el teu vídeo amb els altres!</li>
+</ul>
+
+<h2>Consells addicionals:</h2>
+<ul>
+    <li>Pots modificar la font i el disseny dels subtítols a Aegisub per personalitzar-los segons el teu gust.</li>
+    <li>Si necessites fer canvis als subtítols després de la gravació, pots editar el fitxer .srt directament a Aegisub.</li>
+    <li>Per una millor qualitat de gravació, ajusta les configuracions d'OBS a "Sortida" per ajustar la resolució i taxa de bits.</li>
+</ul>
+
+<p>Amb aquests passos, hauràs creat una presentació gravada, amb veu i subtítols sincronitzats. Bona sort amb la teva creació!</p>
+
+</body>
+</html>
