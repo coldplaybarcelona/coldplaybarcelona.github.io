@@ -26,6 +26,11 @@
             margin: 10px 0;
             padding-left: 20px;
         }
+        code {
+            background-color: #e1e1e1;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +131,103 @@
 </ul>
 
 <p>Amb aquests passos, hauràs creat una presentació gravada, amb veu i subtítols sincronitzats. Bona sort amb la teva creació!</p>
+
+
+        
+    
+
+<h1>Comprimir vídeo a menys de 25MB i penjar-lo a GitHub Pages</h1>
+
+<p>Aquest tutorial et guiarà per comprimir un vídeo utilitzant HandBrake i després pujar-lo a GitHub Pages per a compartir-lo. Seguirem els passos següents per aconseguir-ho.</p>
+
+<h2>1. Comprimir el vídeo amb HandBrake</h2>
+<p>Després de gravar la teva presentació amb OBS i afegir subtítols amb Aegisub, segurament voldràs comprimir el vídeo per assegurar-te que el fitxer no sigui massa gran. Aquí tens els passos per comprimir el teu vídeo a menys de 25 MB utilitzant HandBrake:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Descarrega i instal·la HandBrake des de la seva pàgina oficial: <a href="https://handbrake.fr/" target="_blank">handbrake.fr</a>.</li>
+    <li><strong>Pas 2:</strong> Obre HandBrake i carrega el teu vídeo gravat amb OBS:
+        <ul>
+            <li>Clica a <strong>Open Source</strong> i selecciona el fitxer del vídeo que vols comprimir.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 3:</strong> Ajusta les opcions de compressió per reduir la mida del vídeo:
+        <ul>
+            <li>Tria el perfil <strong>Fast 1080p30</strong> a la secció <strong>Presets</strong>, que té una bona compressió per vídeos de qualitat mitjana.</li>
+            <li>A la secció <strong>Video</strong>, assegura't que el còdec sigui <strong>H.264 (x264)</strong>.</li>
+            <li>Redueix la qualitat a un valor de <strong>RF: 28-30</strong> per aconseguir una bona compressió sense perdre massa qualitat.</li>
+            <li>Si la mida encara és gran, pots provar de reduir la resolució a 720p (1280x720) per ajudar a reduir encara més la mida del fitxer.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 4:</strong> Afegeix el nom del fitxer d'output:
+        <ul>
+            <li>A la secció <strong>Save As</strong>, tria la ubicació on vols guardar el fitxer comprimit i posa-li un nom.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 5:</strong> Comença la compressió:
+        <ul>
+            <li>Clica el botó <strong>Start Encode</strong> per començar la compressió del vídeo.</li>
+            <li>Un cop la compressió hagi acabat, verifica la mida del vídeo per assegurar-te que és inferior a 25 MB.</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>2. Penjar el vídeo a GitHub Pages</h2>
+<p>Un cop tens el teu vídeo comprimit, pots penjar-lo a GitHub Pages. A continuació et guiaré sobre com fer-ho:</p>
+
+<ul>
+    <li><strong>Pas 1:</strong> Crea un repositori a GitHub:
+        <ul>
+            <li>Accedeix a GitHub i crea un repositori nou. Pots anomenar-lo, per exemple, "presentacio-video".</li>
+            <li>Marca l'opció <strong>Initialize this repository with a README</strong> i clica a <strong>Create repository</strong>.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 2:</strong> Puja el vídeo comprimit al repositori:
+        <ul>
+            <li>A la pàgina del repositori creat, clica a <strong>Upload files</strong>.</li>
+            <li>Afegeix el fitxer de vídeo comprimit que acabes de crear.</li>
+            <li>Un cop seleccionat el fitxer, clica a <strong>Commit changes</strong> per pujar el fitxer al repositori.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 3:</strong> Habilita GitHub Pages:
+        <ul>
+            <li>A la pàgina del repositori, ves a la secció <strong>Settings</strong> i baixa fins a la part de <strong>GitHub Pages</strong>.</li>
+            <li>En la secció <strong>Source</strong>, selecciona <strong>main branch</strong> com a font per a GitHub Pages.</li>
+            <li>Després de configurar-ho, GitHub et proporcionarà una URL pública on el teu lloc web serà accessible, com ara <strong>https://el_teu_usuari.github.io/presentacio-video/</strong>.</li>
+        </ul>
+    </li>
+    <li><strong>Pas 4:</strong> Crea un fitxer HTML per mostrar el vídeo:
+        <ul>
+            <li>Al repositori, clica a <strong>Create new file</strong>.</li>
+            <li>Anomena el fitxer com <strong>index.html</strong> i afegeix el següent codi per incrustar el vídeo:</li>
+        </ul>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ca"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title>Presentació de vídeo&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1>Presentació de la meva presentació&lt;/h1&gt;
+    &lt;video controls&gt;
+        &lt;source src="nom_del_video_comprimit.mp4" type="video/mp4"&gt;
+        El teu navegador no suporta el format de vídeo MP4.
+    &lt;/video&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <li><strong>Pas 5:</strong> Guarda els canvis i visita la teva URL de GitHub Pages per veure el vídeo incrustat.</li>
+</ul>
+
+<h2>Consells addicionals:</h2>
+<ul>
+    <li>Assegura't que el vídeo no superi els 25 MB. Si és més gran, intenta reduir la qualitat o la resolució fins a aconseguir la mida desitjada.</li>
+    <li>GitHub Pages és una eina poderosa per compartir vídeos petits i contingut estàtic de manera senzilla i gratuïta.</li>
+    <li>Si tens més fitxers (com imatges o documents), pots afegir-los al mateix repositori i fer-los accessibles des del mateix lloc web de GitHub Pages.</li>
+</ul>
+
+<p>Amb aquests passos, podràs comprimir el teu vídeo i penjar-lo fàcilment a GitHub Pages per compartir-lo amb qui vulguis.</p>
+
+
 
 </body>
 </html>
