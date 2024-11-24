@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lazy Loading Videos</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <h1>Videos from Technology and Engineering 2 students</h1>
+  <div class="video-gallery">
+    <!-- Video 1 -->
+    <div class="video-item">
+      <video class="lazy-video" controls poster="assets/images/thumbnail1.jpg" data-src="videos/video1a.mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <!-- Video 2 -->
+    <div class="video-item">
+      <video class="lazy-video" controls poster="assets/images/thumbnail2.jpg" data-src="videos/video2.mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <!-- Video 3 -->
+    <div class="video-item">
+      <video class="lazy-video" controls poster="assets/images/thumbnail3.jpg" data-src="videos/video3.mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+  <script src="assets/js/lazyload.js"></script>
+</body>
+</html>
