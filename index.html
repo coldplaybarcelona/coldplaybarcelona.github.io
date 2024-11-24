@@ -93,11 +93,16 @@ transform:rotate(180deg);
         }
     </style>
 <script>
-if (!window.location.href.includes('v=')) {
-    const timestamp = new Date().getTime(); // Genera el timestamp actual
-    window.location.href = `${window.location.origin}${window.location.pathname}?v=${timestamp}`;
-}
-
+fetch(window.location.href, {
+    method: 'GET',
+    cache: 'no-store', // Evita l'ús de la memòria cau
+    headers: {
+        'Pragma': 'no-cache',
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
+    }
+}).then(() => {
+    window.location.reload(true); // Força la recàrrega
+});
 
 </script>
 
