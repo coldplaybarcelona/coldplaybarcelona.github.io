@@ -97,6 +97,9 @@ transform:rotate(180deg);
         window.location.reload(true);
     };
 </script>
+if (!window.location.href.includes('v=')) {
+    window.location.href += '?v=' + new Date().getTime();
+}
 
 
 </head>
