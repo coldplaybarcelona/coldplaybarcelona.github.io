@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyric Puzzle - Love Circuitry</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #001d3d, #003566);
+            color: white;
+            overflow: hidden;
+        }
+
+        h1, p {
+            text-align: center;
+        }
+
+        #audio-player {
+            margin-bottom: 20px;
+        }
+
+        #puzzle-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .piece {
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s ease;
+        }
+
+        #drop-area {
+            width: 90%;
+            max-width: 400px;
+            min-height: 200px;
+            border: 2px dashed white;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #drop-area.correct {
+            border-color: #00ff00;
+        }
+
+        #message {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.5rem;
+            text-align: center;
+            animation: fade-in 1s ease-in-out;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .piece {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Lyric Puzzle - Love Circuitry</h1>
+
+    <audio id="audio-player" controls>
+        <source src="loveandcircuitry.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <p>Drag and drop the sentences below to complete the lyric:</p>
+
+    <div id="puzzle-container">
+        <!-- Sentences will be dynamically generated -->
+    </div>
+
+    <div id="drop-area" data-correct-order="Circuits of love, connecting our hearts.|In the digital realm, where passion starts.|Wires and codes, a symphony of emotion.|Our love, an endless technological devotion.">
+        <!-- Drop area for assembling the sentences -->
+    </div>
+
+    <div id="message">🎉 You solved it! "Circuits of love, connecting our hearts..." 🎶</div>
+
+    <script>
+        // Full sentences for the lyric
+        const lyricSentences = [
+            "Circuits of love, connecting our hearts.",
+            "In the digital realm, where passion starts.",
+            "Wires and codes, a symphony of emotion.",
+            "Our love, an endless technological devotion."
+        ];
+
+        const puzzleContainer = document.getElementById("puzzle-container");
+        const dropArea = document.getElementById("drop-area");
+        const message = document.getElementById("message");
+
+        // Shuffle sentences
+        const shuffledSentences = [...lyricSentences].sort(() => Math.random() - 0.5);
+
+        // Create draggable sentences
+        shuffledSentences.forEach(sentence => {
+            const div = document.createElement("div");
+            div.classList.add("piece");
+            div.textContent = sentence;
+            puzzleContainer.appendChild(div);
+
+            // Add event listeners for both touch and mouse events
+            div.addEventListener("touchstart", onDragStart);
+            div.addEventListener("mousedown", onDragStart);
+
+            div.addEventListener("touchmove", onDragMove);
+            div.addEventListener("mousemove", onDragMove);
+
+            div.addEventListener("touchend", onDragEnd);
+            div.addEventListener("mouseup", onDragEnd);
+
+            div.addEventListener("touchcancel", onDragEnd);
+            div.addEventListener("mouseleave", onDragEnd);
+        });
+
+        // Variables for drag logic
+        let draggedItem = null;
+
+        // Drag start logic
+        function onDragStart(e) {
+          draggedItem = e.target.closest('.piece');
+          if (!draggedItem) return;
+
+          draggedItem.classList.add('dragging');
+          e.preventDefault();
+          startX = e.touches ? e.touches[0].clientX : e.clientX; 
+          startY = e.touches ? e.touches[0].clientY : e.clientY; 
+      }
+
+      // Drag move logic
+      function onDragMove(e) {
+          if (!draggedItem) return;
+
+          const x = e.touches ? e.touches[0].clientX : e.clientX; 
+          const y = e.touches ? e.touches[0].clientY : e.clientY; 
+          const dx = x - startX; 
+          const dy = y - startY; 
+          draggedItem.style.transform = `translate(${dx}px, ${dy}px)`; 
+          e.preventDefault();
+      }
+
+      // Drag end logic
+      function onDragEnd(e) {
+          if (!draggedItem) return;
+
+          draggedItem.classList.remove('dragging');
+          draggedItem.style.transform = '';
+
+          const dropAreaRect = dropArea.getBoundingClientRect();
+          const itemRect = draggedItem.getBoundingClientRect();
+
+          if (
+              itemRect.left < dropAreaRect.right &&
+              itemRect.right > dropAreaRect.left &&
+              itemRect.top < dropAreaRect.bottom &&
+              itemRect.bottom > dropAreaRect.top
+          ) {
+              dropArea.appendChild(draggedItem);
+          }
+
+          draggedItem = null;
+
+          checkPuzzleCompletion();
+          e.preventDefault();
+      }
+
+      // Check if the puzzle is completed
+      function checkPuzzleCompletion() {
+          const currentOrder = Array.from(dropArea.children).map(el => el.textContent).join("|");
+          if (currentOrder === dropArea.dataset.correctOrder) {
+              dropArea.classList.add("correct");
+              message.style.display = "block";
+          }
+      }
+    </script>
+</body>
+</html>
