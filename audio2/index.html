@@ -68,6 +68,15 @@ body {
 .dropdown-item {
             color: #ffffff;
         }
+.navbar-nav .dropdown-menu {
+    left: 0;
+    right: auto;
+    position: absolute; /* Align dropdown to the parent item */
+}
+
+.nav-item.dropdown {
+    position: relative; /* Necessary for proper dropdown positioning */
+}
 
 .dropdown-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
