@@ -3,68 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicaments PWA</title>
-    <meta name="theme-color" content="#4CAF50">
-    <link rel="manifest" href="data:application/json;base64,eyJzaG9ydF9uYW1lIjoiTWVkaWNhbWVudHMiLCJuYW1lIjoiQ29uc3VsdGEgZGVMIG1lZGljYW1lbnRzIiwiY29sb3JfdGhlbWVfZG9tYWluIjoiIzRDQUY1MCIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSJ9">
+    <title>Biblioteca - Catàleg Institut Pompeu Fabra</title>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="#manifest">
+
+    <!-- jQuery i DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        h1 { color: #4CAF50; }
-        input { width: 80%; padding: 10px; margin-bottom: 10px; }
-        ul { list-style: none; padding: 0; }
-        li { padding: 10px; border-bottom: 1px solid #ddd; }
-        button { margin-top: 10px; padding: 10px; }
+        body {
+            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table td {
+            padding: 15px;
+        }
     </style>
 </head>
 <body>
-    <h1>Medicaments PWA</h1>
-    <input type="text" id="search" placeholder="Cerca medicament...">
-    <ul id="medicaments-list"></ul>
-    <button onclick="instalPWA()">Instal·lar com a App</button>
+    <div class="container">
+        <h2 class="my-4 text-center">Biblioteca - Catàleg Institut Pompeu Fabra</h2>
+        
+        <table id="biblioteca" class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Registre</th>
+                    <th>Títol</th>
+                    <th>Autor</th>
+                    <th>CDU</th>
+                    <th>Editorial</th>
+                    <th>Any</th>
+                    <th>Idioma</th>
+                    <th>Camp</th>
+                    <th>ISBN</th>
+                    <th>Pàgines</th>
+                    <th>Descripció</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <script>
-        const medicaments = [
-            {"nom": "Echinacea Complex", "principiActiu": "Echinacea purpurea"},
-            {"nom": "Ginkgo Biloba Forte", "principiActiu": "Ginkgo biloba"},
-            {"nom": "Valeriana Extra", "principiActiu": "Valeriana officinalis"}
-        ];
-
-        function mostraMedicaments() {
-            const list = document.getElementById("medicaments-list");
-            list.innerHTML = "";
-            medicaments.forEach(med => {
-                let li = document.createElement("li");
-                li.textContent = `${med.nom} - ${med.principiActiu}`;
-                list.appendChild(li);
-            });
-        }
-
-        document.getElementById("search").addEventListener("keyup", function () {
-            let filter = this.value.toLowerCase();
-            document.querySelectorAll("#medicaments-list li").forEach(li => {
-                li.style.display = li.textContent.toLowerCase().includes(filter) ? "" : "none";
-            });
-        });
-
-        mostraMedicaments();
-
-        // Afegir funcionalitat PWA
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
-                .then(() => console.log('Service Worker registrat!'))
-                .catch(err => console.log('Error SW:', err));
+            .then(function(registration) {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(function(error) {
+                console.log('Service Worker registration failed:', error);
+            });
         }
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+        $(document).ready(function () {
+            var llibres = [
+                {
+                    "registre": "001",
+                    "titol": "1984",
+                    "autor": "George Orwell",
+                    "cdu": "821.111-3",
+                    "editorial": "Penguin Books",
+                    "any": 1949,
+                    "idioma": "Anglès",
+                    "camp": "Literatura anglesa",
+                    "isbn": "978-0451524935",
+                    "pagines": 328,
+                    "descripcio": "Una obra mestra distòpica que explora els perills del totalitarisme."
+                },
+                {
+                    "registre": "002",
+                    "titol": "El Petit Príncep",
+                    "autor": "Antoine de Saint-Exupéry",
+                    "cdu": "843.912",
+                    "editorial": "Gallimard",
+                    "any": 1943,
+                    "idioma": "Francès",
+                    "camp": "Literatura francesa",
+                    "isbn": "978-2070233670",
+                    "pagines": 96,
+                    "descripcio": "Un conte filosòfic que explora la importància de l'amistat."
+                },
+                {
+                    "registre": "003",
+                    "titol": "La Plaça del Diamant",
+                    "autor": "Mercè Rodoreda",
+                    "cdu": "821.134.2-3",
+                    "editorial": "Club Editor",
+                    "any": 1962,
+                    "idioma": "Català",
+                    "camp": "Literatura catalana",
+                    "isbn": "978-8473291736",
+                    "pagines": 256,
+                    "descripcio": "Una novel·la cabdal de la literatura catalana que retrata la vida d'una dona durant la Guerra Civil espanyola."
+                },
+                {
+                    "registre": "004",
+                    "titol": "Don Quixot",
+                    "autor": "Miguel de Cervantes",
+                    "cdu": "863",
+                    "editorial": "Francisco de Robles",
+                    "any": 1605,
+                    "idioma": "Castellà",
+                    "camp": "Literatura espanyola",
+                    "isbn": "978-8491051404",
+                    "pagines": 863,
+                    "descripcio": "Considerada la primera novel·la moderna, una obra mestra que parodia els llibres de cavalleries."
+                }
+            ];
+
+            $('#biblioteca').DataTable({
+                responsive: true,
+                data: llibres,
+                columns: [
+                    { data: "registre" },
+                    { data: "titol" },
+                    { data: "autor" },
+                    { data: "cdu" },
+                    { data: "editorial" },
+                    { data: "any" },
+                    { data: "idioma" },
+                    { data: "camp" },
+                    { data: "isbn" },
+                    { data: "pagines" },
+                    { data: "descripcio" }
+                ],
+                language: {
+                    search: "Cerca:",
+                    lengthMenu: "Mostra _MENU_ registres per pàgina",
+                    info: "Mostrant _START_ a _END_ de _TOTAL_ registres",
+                    paginate: {
+                        first: "Primer",
+                        last: "Últim",
+                        next: "Següent",
+                        previous: "Anterior"
+                    },
+                    infoEmpty: "No hi ha registres disponibles",
+                    infoFiltered: "(filtrats de _MAX_ registres en total)",
+                    loadingRecords: "Carregant...",
+                    zeroRecords: "No s'han trobat resultats",
+                    emptyTable: "No hi ha dades disponibles"
+                }
+            });
         });
+    </script>
 
-        function instalPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-            }
+    <!-- Manifest -->
+    <script type="application/manifest+json" id="manifest">
+    {
+      "name": "Biblioteca Pompeu",
+      "short_name": "Biblioteca",
+      "start_url": ".",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#000000",
+      "icons": [
+        {
+          "src": "logo.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
         }
+      ]
+    }
+    </script>
+
+    <!-- Service Worker -->
+    <script id="service-worker" type="text/javascript">
+    self.addEventListener('install', function(event) {
+      event.waitUntil(
+        caches.open('biblioteca-cache').then(function(cache) {
+          return cache.addAll([
+            './',
+            './index.html',
+            './logo.png',
+            'https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css',
+            'https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css',
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css',
+            'https://code.jquery.com/jquery-3.6.0.min.js',
+            'https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js',
+            'https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js'
+          ]);
+        })
+      );
+    });
+
+    self.addEventListener('fetch', function(event) {
+      event.respondWith(
+        caches.match(event.request).then(function(response) {
+          return response || fetch(event.request);
+        })
+      );
+    });
+    </script>
+
+    <script>
+    // Registrar el Service Worker
+    if ('serviceWorker' in navigator) {
+      const swContent = document.querySelector('#service-worker').textContent;
+      const blob = new Blob([swContent], {type: 'text/javascript'});
+      const swUrl = URL.createObjectURL(blob);
+      
+      navigator.serviceWorker.register(swUrl)
+        .then(function(registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(function(error) {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
     </script>
 </body>
 </html>
