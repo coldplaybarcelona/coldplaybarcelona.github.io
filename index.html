@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,44 +9,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="logo.ico">
     <style>
+        .logo-size {
+            height: 50px;
+            width: 50px;
+            object-fit: cover;
+        }
 
-        
-.logo-size {
-height: 50px;
-width: 50px;
-object-fit: cover;
-    }
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
 
-body {
+        body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: #ffffff;
         }
 
-.navbar {
+        .navbar {
             background-color: rgba(255, 255, 255, 0.1) !important;
             backdrop-filter: blur(10px);
         }
 
-.navbar-brand, .nav-link {
+        .navbar-brand,
+        .nav-link {
             color: #ffffff !important;
         }
 
-.dropdown-menu {
+        .dropdown-menu {
             background-color: #385488;
             backdrop-filter: blur(10px);
         }
 
-.dropdown-item {
+        .dropdown-item {
             color: #ffffff;
         }
 
-.dropdown-item:hover {
+        .dropdown-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
 
-.hero-section {
+        .hero-section {
             background: url('coldplay-background.jpg') no-repeat center center;
             background-size: cover;
             height: 50vh;
@@ -54,44 +55,71 @@ body {
             justify-content: center;
             text-align: center;
         }
-.hero-content {
+
+        .hero-content {
             background-color: rgba(0, 0, 0, 0.6);
             padding: 2rem;
             border-radius: 10px;
         }
-.section-title {
+
+        .section-title {
             border-bottom: 2px solid #ffffff;
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
         }
 
-.card {
+        .card {
             background-color: rgba(255, 255, 255, 0.1);
             border: none;
             transition: transform 0.3s ease;
         }
 
-.card:hover {
+        .card:hover {
             transform: translateY(-5px);
         }
-.btn-custom {
+
+        .btn-custom {
             background-color: #1e3c72;
             color: #ffffff;
             border: none;
             transition: background-color 0.3s ease;
         }
-.btn-custom:hover {
+
+        .btn-custom:hover {
             background-color: #2a5298;
+        }
+
+        /* Style for video section */
+        .video-section {
+            padding: 2rem 0;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img src="logo.png" alt="Logo" class="logo-size">
                 Musical Arts Research</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -100,110 +128,168 @@ body {
                         <a class="nav-link" href="./index.html"><i class="fas fa-home me-2"></i>Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="videosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="videosDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-video me-2"></i>Videos</a>
                         <ul class="dropdown-menu" aria-labelledby="videosDropdown">
-                            <li><a class="dropdown-item" href="./videosa/"><i class="fas fa-terminal me-2"></i>Technology and Engineering</a></li>
-                            <li><a class="dropdown-item" href="./videosb/"><i class="fas fa-laptop-code me-2"></i>Coding</a></li>
-                            <li><a class="dropdown-item" href="./videosr"><i class="fab fa-python me-2"></i>Robotics</a></li>
-                            <li><a class="dropdown-item" href="./videosd"><i class="fab fa-reddit-square me-2"></i>Digitalization</a></li>
-                            <li><a class="dropdown-item" href="./videosp"><i class="fa-solid fa-diagram-project me-2"></i>Projects</a></li>
+                            <li><a class="dropdown-item" href="./videosa/"><i class="fas fa-terminal me-2"></i>Technology
+                                    and Engineering</a></li>
+                            <li><a class="dropdown-item" href="./videosb/"><i class="fas fa-laptop-code me-2"></i>Coding</a>
+                            </li>
+                            <li><a class="dropdown-item" href="./videosr"><i class="fab fa-python me-2"></i>Robotics</a>
+                            </li>
+                            <li><a class="dropdown-item" href="./videosd"><i
+                                        class="fab fa-reddit-square me-2"></i>Digitalization</a></li>
+                            <li><a class="dropdown-item" href="./videosp"><i
+                                        class="fa-solid fa-diagram-project me-2"></i>Projects</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-flask me-2"></i>Projects
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
-                            <li><a class="dropdown-item" href="./svgvisualizer"><i class="fas fa-star me-2"></i>Simple shape Audio Visualizer</a></li>
-                            <li><a class="dropdown-item" href="./audio2"><i class="fas fa-mercury me-2"></i>Coldplay Audio Visualizer</a></li>
-                            <li><a class="dropdown-item" href="./audio"><i class="fas fa-lightbulb me-2"></i>Audio Visualizer 1</a></li>
-                            <li><a class="dropdown-item" href="./drawshapes"><i class="fas fa-shapes me-2"></i>Audio Visualizer 2</a></li>
-                            <li><a class="dropdown-item" href="./changes"><i class="fab fa-python me-2"></i>Song visualizer</a></li>
-                            <li><a class="dropdown-item" href="./rainbow"><i class="fa-solid fa-rainbow me-2"></i>Rainbow audio</a></li>
-                            <li><a class="dropdown-item" href="./fractalvisualizer"><i class="fa-solid fa-image me-2"></i>Fractal Visualizer 1</a></li>
-                            <li><a class="dropdown-item" href="./fractal"><i class="fa-solid fa-tree me-2"></i>Fractal Visualizer 2</a></li>
-                            <li><a class="dropdown-item" href="./buddhabrot"><i class="fa-solid fa-vihara me-2"></i>Buddhabrot Visualizer</a></li>
-                            <li><a class="dropdown-item" href="./dejongaudio"><i class="fa-solid fa-dharmachakra me-2"></i>De Jong Visualizer</a></li>
-                            <li><a class="dropdown-item" href="./fireworks"><i class="fa-solid fa-music me-2"></i>Fireworks Visualizer 1</a></li>
-                            <li><a class="dropdown-item" href="./fireworks2"><i class="fa-solid fa-fire me-2"></i>Fireworks Visualizer 2</a></li>
-                             <li><a class="dropdown-item" href="./puzzle"><i class="fa-solid fa-puzzle-piece"></i>Our song puzzle</a></li>
-                            <li><a class="dropdown-item" href="./mic"><i class="fa-solid fa-microphone me-2"></i>Microphone Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./svgvisualizer"><i class="fas fa-star me-2"></i>Simple
+                                    shape Audio Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./audio2"><i class="fas fa-mercury me-2"></i>Coldplay
+                                    Audio Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./audio"><i class="fas fa-lightbulb me-2"></i>Audio
+                                    Visualizer 1</a></li>
+                            <li><a class="dropdown-item" href="./drawshapes"><i class="fas fa-shapes me-2"></i>Audio
+                                    Visualizer 2</a></li>
+                            <li><a class="dropdown-item" href="./changes"><i class="fab fa-python me-2"></i>Song
+                                    visualizer</a></li>
+                            <li><a class="dropdown-item" href="./rainbow"><i class="fa-solid fa-rainbow me-2"></i>Rainbow
+                                    audio</a></li>
+                            <li><a class="dropdown-item" href="./fractalvisualizer"><i
+                                        class="fa-solid fa-image me-2"></i>Fractal Visualizer 1</a></li>
+                            <li><a class="dropdown-item" href="./fractal"><i class="fa-solid fa-tree me-2"></i>Fractal
+                                    Visualizer 2</a></li>
+                            <li><a class="dropdown-item" href="./buddhabrot"><i
+                                        class="fa-solid fa-vihara me-2"></i>Buddhabrot Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./dejongaudio"><i
+                                        class="fa-solid fa-dharmachakra me-2"></i>De Jong Visualizer</a></li>
+                            <li><a class="dropdown-item" href="./fireworks"><i
+                                        class="fa-solid fa-music me-2"></i>Fireworks Visualizer 1</a></li>
+                            <li><a class="dropdown-item" href="./fireworks2"><i class="fa-solid fa-fire me-2"></i>Fireworks
+                                    Visualizer 2</a></li>
+                            <li><a class="dropdown-item" href="./puzzle"><i class="fa-solid fa-puzzle-piece"></i>Our song
+                                    puzzle</a></li>
+                            <li><a class="dropdown-item" href="./mic"><i
+                                        class="fa-solid fa-microphone me-2"></i>Microphone Visualizer</a></li>
                         </ul>
                     </li>
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-tools me-2"></i>Tools</a>
-    <ul class="dropdown-menu" aria-labelledby="toolsDropdown">
-        <li><a class="dropdown-item" href="./musiccolor"><i class="fa-solid fa-palette me-2"></i>Colour & music</a></li>
-        <li><a class="dropdown-item" href="./piano"><i class="fa-solid fa-keyboard me-2"></i>Piano & colour</a></li>
-        <li><a class="dropdown-item" href="./svg"><i class="fa-regular fa-image me-2"></i>SVG & music</a></li>
-        <li><a class="dropdown-item" href="./buddhabrotaudio"><i class="fa-solid fa-vihara me-2"></i>Buddhabrot</a></li>
-        <li><a class="dropdown-item" href="./dejong"><i class="fa-solid fa-dharmachakra me-2"></i>De Jong Attractors</a></li>
-        <li><a class="dropdown-item" href="./svgeditor1"><i class="fas fa-diagram-project me-2"></i>SVG Path Generator</a></li>
-        <li><a class="dropdown-item" href="./generateshapes"><i class="fas fa-vector-square me-2"></i>p5 Shape Generator</a></li>
-        <li><a class="dropdown-item" href="./coordinates"><i class="fas fa-draw-polygon me-2"></i>Find coordinates</a></li>
-    </ul>
-</li>
-        </ul>
-    </div>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-tools me-2"></i>Tools</a>
+                        <ul class="dropdown-menu" aria-labelledby="toolsDropdown">
+                            <li><a class="dropdown-item" href="./musiccolor"><i
+                                        class="fa-solid fa-palette me-2"></i>Colour & music</a></li>
+                            <li><a class="dropdown-item" href="./piano"><i class="fa-solid fa-keyboard me-2"></i>Piano &
+                                    colour</a></li>
+                            <li><a class="dropdown-item" href="./svg"><i class="fa-regular fa-image me-2"></i>SVG &
+                                    music</a></li>
+                            <li><a class="dropdown-item" href="./buddhabrotaudio"><i
+                                        class="fa-solid fa-vihara me-2"></i>Buddhabrot</a></li>
+                            <li><a class="dropdown-item" href="./dejong"><i
+                                        class="fa-solid fa-dharmachakra me-2"></i>De Jong Attractors</a></li>
+                            <li><a class="dropdown-item" href="./svgeditor1"><i
+                                        class="fas fa-diagram-project me-2"></i>SVG Path Generator</a></li>
+                            <li><a class="dropdown-item" href="./generateshapes"><i
+                                        class="fas fa-vector-square me-2"></i>p5 Shape Generator</a></li>
+                            <li><a class="dropdown-item" href="./coordinates"><i
+                                        class="fas fa-draw-polygon me-2"></i>Find coordinates</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
-    
+
     <header class="hero-section">
         <div class="hero-content">
             <h1 class="display-4 fw-bold">Musical Arts Research (work in progress)</h1>
-            <p class="lead">An interdisciplinary exploration of Coldplay's  music, technology, and creativity</p>
+            <p class="lead">An interdisciplinary exploration of Coldplay's music, technology, and creativity</p>
         </div>
     </header>
-<iframe width="932" height="528" src="https://www.youtube.com/embed/TOJuv4in0f4" title="Coldplay Musical Arts Project" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe width="560" 
-        height="315" 
-        src="https://www.youtube.com/embed/f5AheYznu6c" 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+    <!-- Video Section -->
+    <section class="video-section container py-5">
+        <h2 class="section-title">Featured Videos</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/TOJuv4in0f4"
+                            title="Coldplay Musical Arts Project" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/f5AheYznu6c" title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <main class="container py-5">
         <section>
             <h2 class="section-title">Project Overview</h2>
-            <p>This multidisciplinary research project involves students from different age groups and specialties exploring various aspects of Coldplay's music, career, and impact through creative and technological projects.</p>
+            <p>This multidisciplinary research project involves students from different age groups and specialties
+                exploring various aspects of Coldplay's music, career, and impact through creative and technological
+                projects.</p>
 
-            <h2>Participating groups</h2> 
-             <ul><li>Project group (Ages 11-13)</li> 
-
-
-<li>Digitalization Group (Ages 15-16)</li>
-
-<li>Coding Group (Ages 16-17)</li>
-<li>Robotics Group (Ages 16-17)</li>
-<li>Technology and Engineering 2 Group (Ages 17-18)</li>
-</ul>
+            <h2>Participating groups</h2>
+            <ul>
+                <li>Project group (Ages 11-13)</li>
+                <li>Digitalization Group (Ages 15-16)</li>
+                <li>Coding Group (Ages 16-17)</li>
+                <li>Robotics Group (Ages 16-17)</li>
+                <li>Technology and Engineering 2 Group (Ages 17-18)</li>
+            </ul>
 
         </section>
 
         <section class="mt-5">
             <h2 class="section-title">Project Highlights</h2>
-            <p>Students have put forward a range of innovative ideas aimed at enhancing sustainability in concerts. Their proposals include smart clothing, augmented reality experiences, and energy-generating devices. Additionally, they have created audio visualizers for Coldplay songs, incorporating interactive elements that engage the audience.</p>
+            <p>Students have put forward a range of innovative ideas aimed at enhancing sustainability in concerts.
+                Their proposals include smart clothing, augmented reality experiences, and energy-generating devices.
+                Additionally, they have created audio visualizers for Coldplay songs, incorporating interactive
+                elements that engage the audience.</p>
 
 
-            <p>One of their standout developments is a series of innovative smart bands that change color in response to music, making them accessible and enjoyable for everyone. These wearables leverage the capabilities of the ESP32C3 microcontroller, RGB LED strips, and built-in microphones to deliver a captivating visual experience. Furthermore, the designs incorporate Lilypad components, sensors, and actuators, ensuring that these bands provide an engaging experience for all users, including those in the deaf community.</p>
+            <p>One of their standout developments is a series of innovative smart bands that change color in response
+                to music, making them accessible and enjoyable for everyone. These wearables leverage the capabilities
+                of the ESP32C3 microcontroller, RGB LED strips, and built-in microphones to deliver a captivating
+                visual experience. Furthermore, the designs incorporate Lilypad components, sensors, and actuators,
+                ensuring that these bands provide an engaging experience for all users, including those in the deaf
+                community.</p>
         </section>
 
         <section class="mt-5">
             <h2 class="section-title">Resources</h2>
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <a href="http://github.com/drfperez" target="_blank" class="btn btn-custom btn-block"><i class="fa-brands fa-github me-2"></i>Professor's GitHub</a>
+                    <a href="http://github.com/drfperez" target="_blank" class="btn btn-custom btn-block"><i
+                            class="fa-brands fa-github me-2"></i>Professor's GitHub</a>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <a href="https://blocs.xtec.cat/tecno" target="_blank" class="btn btn-custom btn-block"><i class="fas fa-blog me-2"></i>Xtec Blog</a>
+                    <a href="https://blocs.xtec.cat/tecno" target="_blank" class="btn btn-custom btn-block"><i
+                            class="fas fa-blog me-2"></i>Xtec Blog</a>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <a href="https://pompeu.neocities.org" target="_blank" class="btn btn-custom btn-block"><i class="fas fa-globe me-2"></i>Neocities Blog</a>
+                    <a href="https://pompeu.neocities.org" target="_blank" class="btn btn-custom btn-block"><i
+                            class="fas fa-globe me-2"></i>Neocities Blog</a>
                 </div>
             </div>
         </section>
@@ -215,4 +301,5 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
